@@ -1,0 +1,15 @@
+D:\homework\ООП\New Ball Game\NewBallGame\bin\Debug\net9.0\NewBallGame.exe
+D:\homework\ООП\New Ball Game\NewBallGame\bin\Debug\net9.0\NewBallGame.deps.json
+D:\homework\ООП\New Ball Game\NewBallGame\bin\Debug\net9.0\NewBallGame.runtimeconfig.json
+D:\homework\ООП\New Ball Game\NewBallGame\bin\Debug\net9.0\NewBallGame.dll
+D:\homework\ООП\New Ball Game\NewBallGame\bin\Debug\net9.0\NewBallGame.pdb
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.GeneratedMSBuildEditorConfig.editorconfig
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.AssemblyInfoInputs.cache
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.AssemblyInfo.cs
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.csproj.CoreCompileInputs.cache
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.dll
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\refint\NewBallGame.dll
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.pdb
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.genruntimeconfig.cache
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\ref\NewBallGame.dll
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.sourcelink.json
