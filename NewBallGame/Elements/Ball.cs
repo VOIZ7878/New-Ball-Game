@@ -1,3 +1,5 @@
+using BallGame.Rendering;
+
 namespace BallGame
 {
     class Ball : GameElement
@@ -7,9 +9,13 @@ namespace BallGame
 
         public Ball(int x, int y)
         {
-            Type = CellType.Ball;
             X = x;
             Y = y;
+        }
+
+        public override void Render(IRenderer renderer, int x, int y)
+        {
+            renderer.RenderAt(x, y, "•");
         }
 
         public void Move(GameField field)

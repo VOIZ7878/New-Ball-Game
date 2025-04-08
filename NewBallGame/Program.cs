@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace BallGame
 {
@@ -30,6 +31,22 @@ namespace BallGame
                     else if (key == ConsoleKey.R)
                     {
                         field.RestartLevel(true);
+                    }
+                    else if (key == ConsoleKey.V)
+                    {
+                        Console.Clear();
+                        string filePath = "GameResults.txt";
+                        if (File.Exists(filePath))
+                        {
+                            Console.WriteLine("Game Results:");
+                            Console.WriteLine(File.ReadAllText(filePath));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No results found.");
+                        }
+                        Console.WriteLine("\nPress any key to return to the game...");
+                        Console.ReadKey(true);
                     }
                     else
                     {

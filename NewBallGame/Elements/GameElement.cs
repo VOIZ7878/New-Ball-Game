@@ -1,7 +1,9 @@
+using BallGame.Rendering;
+
 namespace BallGame
 {
-    class GameElement
+    abstract class GameElement
     {
-        public CellType Type { get; protected set; }
+        public abstract void Render(IRenderer renderer, int x, int y);
     }
 }

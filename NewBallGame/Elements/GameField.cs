@@ -1,3 +1,5 @@
+using BallGame.Rendering; 
+
 namespace BallGame
 {
     class GameField
@@ -17,6 +19,7 @@ namespace BallGame
             width = w;
             height = h;
             grid = new GameElement?[w, h];
+            Player = new Player(1, 1);
             InitializeField();
             startTime = DateTime.Now;
         }
@@ -25,45 +28,29 @@ namespace BallGame
         {
             Random rnd = new Random();
 
-            // Cleaning
             for (int x = 0; x < width; x++)
+            {
                 for (int y = 0; y < height; y++)
+                {
                     grid[x, y] = null;
-
-            // Walls
-            for (int x = 0; x < width; x++)
-            {
-                grid[x, 0] = new Wall();
-                grid[x, height - 1] = new Wall();
-            }
-            for (int y = 0; y < height; y++)
-            {
-                grid[0, y] = new Wall();
-                grid[width - 1, y] = new Wall();
+                    if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
+                        grid[x, y] = new Wall();
+                }
             }
 
-            // Ball/Player
+            PlaceRandomElements<Wall>(rnd.Next(2, 4));
+
+
             Ball = new Ball(width / 2, height / 2);
             Player = new Player(1, 1);
 
-            // Energy balls
-            energyBallCount = 1;
-            for (int i = 0; i < energyBallCount; i++)
-            {
-                int x, y;
-                do
-                {
-                    x = rnd.Next(1, width - 1);
-                    y = rnd.Next(1, height - 1);
-                } while (grid[x, y] != null);
 
-                grid[x, y] = new EnergyBall();
-            }
+            energyBallCount = rnd.Next(1, 3);
+            PlaceRandomElements<EnergyBall>(energyBallCount);
 
-            // Enemies
+
             enemiesCount = rnd.Next(1, 4);
             Enemies.Clear();
-
             for (int i = 0; i < enemiesCount; i++)
             {
                 int x, y;
@@ -73,18 +60,29 @@ namespace BallGame
                     y = rnd.Next(1, height - 1);
                 } while (grid[x, y] != null || IsEnemy(x, y));
 
-                Enemies.Add(new Enemy(x, y));
+                var enemy = new Enemy(x, y);
+                Enemies.Add(enemy);
+                grid[x, y] = enemy;
             }
         }
 
-        public bool IsWall(int x, int y)
+        private void PlaceRandomElements<T>(int count) where T : GameElement, new()
         {
-            if (x < 0 || x >= width || y < 0 || y >= height) 
-                return true;
-            
-            return grid[x, y] is Wall;
+            Random rnd = new Random();
+            for (int i = 0; i < count; i++)
+            {
+                int x, y;
+                do
+                {
+                    x = rnd.Next(1, width - 1);
+                    y = rnd.Next(1, height - 1);
+                } while (grid[x, y] != null);
+
+                grid[x, y] = new T();
+            }
         }
 
+        public bool IsWall(int x, int y) => x < 0 || x >= width || y < 0 || y >= height || grid[x, y] is Wall;
         public bool IsEnemy(int x, int y) => Enemies.Any(o => o.X == x && o.Y == y);
 
         public bool IsShield(int x, int y, out char dir)
@@ -97,13 +95,16 @@ namespace BallGame
             dir = ' ';
             return false;
         }
+
         public bool IsEnergyBall(int x, int y) => grid[x, y] is EnergyBall;
+
         public void CollectEnergyBall(int x, int y)
         {
             grid[x, y] = null;
             energyBallCount--;
             Player.AddScore(100);
         }
+
         public bool PlaceShield(int x, int y, char direction)
         {
             if (grid[x, y] == null)
@@ -114,65 +115,111 @@ namespace BallGame
             return false;
         }
 
+        private void SaveGameResults(int totalScore, double totalTimePlayed)
+        {
+            string filePath = "GameResults.txt";
+            using StreamWriter writer = new StreamWriter(filePath, append: true);
+            writer.WriteLine($"Total Score: {totalScore}, Total Time Played: {totalTimePlayed:F2} seconds");
+        }
+
         public void Update(bool playerMoved)
         {
             if (Ball == null) return;
-            
+
             Ball.Move(this);
 
             if (playerMoved)
             {
                 foreach (var enemy in Enemies)
-                    enemy.Move(this);
+                {
+                    grid[enemy.X, enemy.Y] = null;
+                }
+
+                Enemies.ForEach(e =>
+                {
+                    e.Move(this);
+                    grid[e.X, e.Y] = e;
+                });
             }
 
-            if (Enemies.Any(o => o.X == Player.X && o.Y == Player.Y))
+            if (IsEnemy(Player.X, Player.Y))
             {
+                var elapsedTime = (DateTime.Now - startTime).TotalSeconds;
+                SaveGameResults(TotalScore, elapsedTime);
+
                 Console.Clear();
-                Console.WriteLine("Game Over! You were caught by an enemy.");
-                Console.WriteLine($"Final Total Score: {TotalScore}");
-                System.Threading.Thread.Sleep(2000);
-                Environment.Exit(0);
+                Console.WriteLine($"Game Over! Final Total Score: {TotalScore}, Total Time Played: {elapsedTime:F2} seconds");
+                Console.WriteLine("Press 'R' to restart or 'Esc' to exit.");
+
+                while (true)
+                {
+                    var key = Console.ReadKey(true).Key;
+                    if (key == ConsoleKey.R)
+                    {
+                        RestartLevel(true);
+                        return;
+                    }
+                    else if (key == ConsoleKey.Escape)
+                    {
+                        Environment.Exit(0);
+                    }
+                }
             }
 
             if (energyBallCount == 0)
             {
                 TotalScore += Player.Score;
+                var elapsedTime = (DateTime.Now - startTime).TotalSeconds;
                 Console.Clear();
-                TimeSpan elapsedTime = DateTime.Now - startTime;
-                Console.WriteLine($"You win! Level Score: {Player.Score}, Total Score: {TotalScore}, Time: {elapsedTime.TotalSeconds:F2} seconds");
+                Console.WriteLine($"You win this level! Level Score: {Player.Score}, Total Score: {TotalScore}, Time: {elapsedTime:F2} seconds");
                 System.Threading.Thread.Sleep(2000);
+
                 RestartLevel(false);
-                return;
+            }
+            else if (!CanWin())
+            {
+                var elapsedTime = (DateTime.Now - startTime).TotalSeconds;
+                SaveGameResults(TotalScore, elapsedTime);
+
+                Console.Clear();
+                Console.WriteLine($"Game Over! No reachable energy balls. Final Total Score: {TotalScore}, Total Time Played: {elapsedTime:F2} seconds");
+                Console.WriteLine("Press 'R' to restart or 'Esc' to exit.");
+
+                while (true)
+                {
+                    var key = Console.ReadKey(true).Key;
+                    if (key == ConsoleKey.R)
+                    {
+                        RestartLevel(true);
+                        return;
+                    }
+                    else if (key == ConsoleKey.Escape)
+                    {
+                        Environment.Exit(0);
+                    }
+                }
             }
         }
 
-        public void Render()
+        public void Render() => Render(new ConsoleRenderer());
+
+        public void Render(IRenderer renderer)
         {
-            Console.Clear();
+            renderer.Clear();
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
                     if (Ball != null && Ball.X == x && Ball.Y == y)
-                        Console.Write("•");
+                        Ball.Render(renderer, x, y);
                     else if (Player.X == x && Player.Y == y)
-                        Console.Write("I");
-                    else if (grid[x, y] is Wall)
-                        Console.Write("#");
-                    else if (grid[x, y] is Shield s)
-                        Console.Write(s.Direction);
-                    else if (grid[x, y] is EnergyBall)
-                        Console.Write("@");
-                    else if (Enemies.Any(e => e.X == x && e.Y == y))
-                        Console.Write("E");
+                        Player.Render(renderer, x, y);
                     else
-                        Console.Write(" ");
+                        grid[x, y]?.Render(renderer, x, y);
                 }
-                Console.WriteLine();
             }
+            renderer.RenderFrame();
         }
-
 
         public void RestartLevel(bool resetScore = false)
         {
@@ -199,16 +246,10 @@ namespace BallGame
             if (energyBallCount == 0) return true;
 
             for (int x = 0; x < width; x++)
-            {
                 for (int y = 0; y < height; y++)
-                {
-                    if (grid[x, y] is EnergyBall)
-                    {
-                        if (PathExists(Player.X, Player.Y, x, y))
-                            return true;
-                    }
-                }
-            }
+                    if (grid[x, y] is EnergyBall && PathExists(Player.X, Player.Y, x, y))
+                        return true;
+
             return false;
         }
 
@@ -220,27 +261,21 @@ namespace BallGame
 
             while (queue.Count > 0)
             {
-                (int x, int y) = queue.Dequeue();
+                var (x, y) = queue.Dequeue();
                 if (x == targetX && y == targetY) return true;
-
                 if (visited[x, y]) continue;
                 visited[x, y] = true;
 
-                foreach ((int dx, int dy) in new (int, int)[] { (0, -1), (0, 1), (-1, 0), (1, 0) })
+                foreach (var (dx, dy) in new[] { (0, -1), (0, 1), (-1, 0), (1, 0) })
                 {
-                    int newX = x + dx, newY = y + dy;
-                    if (newX >= 0 && newX < width && newY >= 0 && newY < height && !visited[newX, newY])
-                    {
-                        if (grid[newX, newY] == null || grid[newX, newY] is EnergyBall)
-                        {
-                            queue.Enqueue((newX, newY));
-                        }
-                    }
+                    int nx = x + dx, ny = y + dy;
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height && !visited[nx, ny] &&
+                        (grid[nx, ny] == null || grid[nx, ny] is EnergyBall))
+                        queue.Enqueue((nx, ny));
                 }
             }
+
             return false;
         }
     }
 }
-
-

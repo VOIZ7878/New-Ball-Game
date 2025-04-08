@@ -1,13 +1,21 @@
+using BallGame.Rendering;
+
 namespace BallGame
 {
     class Player
     {
         public int X, Y;
         public int Score { get; private set; } = 0;
+
         public Player(int x, int y)
         {
             X = x;
             Y = y;
+        }
+
+        public void Render(IRenderer renderer, int x, int y)
+        {
+            renderer.RenderAt(x, y, "I");
         }
 
         public void Move(ConsoleKey key, GameField field)

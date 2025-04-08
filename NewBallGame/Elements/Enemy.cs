@@ -1,19 +1,25 @@
+using BallGame.Rendering;
+
 namespace BallGame
 {
     class Enemy : GameElement
     {
         public int X, Y;
-        private Random rnd = new Random();
 
         public Enemy(int x, int y)
         {
-            Type = CellType.Enemy;
             X = x;
             Y = y;
         }
 
-        public void Move(GameField field)
+        public override void Render(IRenderer renderer, int x, int y)
         {
+            renderer.RenderAt(x, y, "E");
+        }
+
+       public void Move(GameField field)
+        {
+            Random rnd = new Random();
             int[] dx = { -1, 1, 0, 0 };
             int[] dy = { 0, 0, -1, 1 };
             int dir = rnd.Next(4);

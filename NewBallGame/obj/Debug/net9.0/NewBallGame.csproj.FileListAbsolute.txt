@@ -13,3 +13,9 @@ D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.pdb
 D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.genruntimeconfig.cache
 D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\ref\NewBallGame.dll
 D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.sourcelink.json
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallGame.csproj.AssemblyReference.cache
+D:\homework\ООП\New Ball Game\NewBallGame\bin\Debug\net9.0\Microsoft.Win32.SystemEvents.dll
+D:\homework\ООП\New Ball Game\NewBallGame\bin\Debug\net9.0\System.Drawing.Common.dll
+D:\homework\ООП\New Ball Game\NewBallGame\bin\Debug\net9.0\System.Private.Windows.Core.dll
+D:\homework\ООП\New Ball Game\NewBallGame\bin\Debug\net9.0\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll
+D:\homework\ООП\New Ball Game\NewBallGame\obj\Debug\net9.0\NewBallG.3DD4629F.Up2Date
