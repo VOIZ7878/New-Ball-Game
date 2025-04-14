@@ -24,6 +24,12 @@ namespace BallGame
             startTime = DateTime.Now;
         }
 
+        public GameElement? this[int x, int y]
+        {
+            get => grid[x, y];
+            set => grid[x, y] = value;
+        }
+
         private void InitializeField()
         {
             Random rnd = new Random();
