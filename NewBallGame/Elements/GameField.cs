@@ -34,45 +34,61 @@ namespace BallGame
         {
             Random rnd = new Random();
 
+            do
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        grid[x, y] = null;
+                        if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
+                            grid[x, y] = new Wall();
+                    }
+                }
+
+                PlaceRandomElements<Wall>(rnd.Next(2, 4));
+
+                Ball = new Ball(width / 2, height / 2);
+                Player = new Player(1, 1);
+
+                energyBallCount = rnd.Next(1, 3);
+                PlaceRandomElements<EnergyBall>(energyBallCount, avoidNear: (Ball.X, Ball.Y));
+
+                enemiesCount = rnd.Next(1, 4);
+                Enemies.Clear();
+                for (int i = 0; i < enemiesCount; i++)
+                {
+                    int x, y;
+                    do
+                    {
+                        x = rnd.Next(1, width - 1);
+                        y = rnd.Next(1, height - 1);
+                    } while (grid[x, y] != null || IsEnemy(x, y) || (x == Player.X && y == Player.Y) || (Ball != null && x == Ball.X && y == Ball.Y));
+
+                    var enemy = new Enemy(x, y);
+                    Enemies.Add(enemy);
+                    grid[x, y] = enemy;
+                }
+
+            } while (!AllEnergyBallsReachable());
+        }
+
+        private bool AllEnergyBallsReachable()
+        {
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    grid[x, y] = null;
-                    if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
-                        grid[x, y] = new Wall();
+                    if (grid[x, y] is EnergyBall && !PathExists(Player.X, Player.Y, x, y))
+                    {
+                        return false;
+                    }
                 }
             }
-
-            PlaceRandomElements<Wall>(rnd.Next(2, 4));
-
-
-            Ball = new Ball(width / 2, height / 2);
-            Player = new Player(1, 1);
-
-
-            energyBallCount = rnd.Next(1, 3);
-            PlaceRandomElements<EnergyBall>(energyBallCount);
-
-
-            enemiesCount = rnd.Next(1, 4);
-            Enemies.Clear();
-            for (int i = 0; i < enemiesCount; i++)
-            {
-                int x, y;
-                do
-                {
-                    x = rnd.Next(1, width - 1);
-                    y = rnd.Next(1, height - 1);
-                } while (grid[x, y] != null || IsEnemy(x, y));
-
-                var enemy = new Enemy(x, y);
-                Enemies.Add(enemy);
-                grid[x, y] = enemy;
-            }
+            return true;
         }
 
-        private void PlaceRandomElements<T>(int count) where T : GameElement, new()
+        private void PlaceRandomElements<T>(int count, (int x, int y)? avoidNear = null) where T : GameElement, new()
         {
             Random rnd = new Random();
             for (int i = 0; i < count; i++)
@@ -82,10 +98,15 @@ namespace BallGame
                 {
                     x = rnd.Next(1, width - 1);
                     y = rnd.Next(1, height - 1);
-                } while (grid[x, y] != null);
+                } while (grid[x, y] != null || (avoidNear.HasValue && IsNear(x, y, avoidNear.Value.x, avoidNear.Value.y)));
 
                 grid[x, y] = new T();
             }
+        }
+
+        private bool IsNear(int x1, int y1, int x2, int y2)
+        {
+            return Math.Abs(x1 - x2) <= 1 && Math.Abs(y1 - y2) <= 1;
         }
 
         public bool IsWall(int x, int y) => x < 0 || x >= width || y < 0 || y >= height || grid[x, y] is Wall;
