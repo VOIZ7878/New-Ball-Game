@@ -2,7 +2,7 @@ using BallGame.Rendering;
 
 namespace BallGame
 {
-    class Ball : GameElement
+    public class Ball : GameElement
     {
         public int X, Y;
         public int Dx = -1, Dy = 0;

@@ -2,7 +2,7 @@ using BallGame.Rendering;
 
 namespace BallGame
 {
-    class Player
+    public class Player
     {
         public int X, Y;
         public int Score { get; private set; } = 0;
@@ -49,6 +49,11 @@ namespace BallGame
         public void AddScore(int points)
         {
             Score += points;
+        }
+
+        public void ResetScore()
+        {
+            Score = 0;
         }
     }
 }

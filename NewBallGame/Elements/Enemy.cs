@@ -2,7 +2,7 @@ using BallGame.Rendering;
 
 namespace BallGame
 {
-    class Enemy : GameElement
+    public class Enemy : GameElement
     {
         public int X, Y;
 
@@ -17,7 +17,7 @@ namespace BallGame
             renderer.RenderAt(x, y, "E");
         }
 
-       public void Move(GameField field)
+        public void Move(GameField field)
         {
             Random rnd = new Random();
             int[] dx = { -1, 1, 0, 0 };
@@ -31,6 +31,25 @@ namespace BallGame
                 X = newX;
                 Y = newY;
             }
+        }
+
+        public static bool IsEnemy(List<Enemy> enemies, int x, int y)
+        {
+            return enemies.Any(enemy => enemy.X == x && enemy.Y == y);
+        }
+
+        public static void UpdateEnemies(List<Enemy> enemies, GameElement?[,] grid, GameField gameField)
+        {
+            foreach (var enemy in enemies)
+            {
+                grid[enemy.X, enemy.Y] = null;
+            }
+
+            enemies.ForEach(e =>
+            {
+                e.Move(gameField);
+                grid[e.X, e.Y] = e;
+            });
         }
     }
 }
