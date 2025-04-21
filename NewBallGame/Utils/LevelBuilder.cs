@@ -53,8 +53,8 @@ namespace BallGame
             if (gameField.Ball == null) return;
 
             int energyBallCount = rnd.Next(1, 3);
-            gameField.PlaceRandomElements<EnergyBall>(energyBallCount, avoidNear: (gameField.Ball.X, gameField.Ball.Y));
-            gameField.SetEnergyBallCount(energyBallCount);
+            PlaceRandomElements<EnergyBall>(gameField, energyBallCount, avoidNear: (gameField.Ball.X, gameField.Ball.Y));
+            gameField.EnergyBallCount = energyBallCount;
         }
 
         private void PlaceEnemies()
@@ -73,6 +73,21 @@ namespace BallGame
                 var enemy = new Enemy(x, y);
                 gameField.Enemies.Add(enemy);
                 gameField[x, y] = enemy;
+            }
+        }
+        public void PlaceRandomElements<T>(GameField gameField, int count, (int x, int y)? avoidNear = null) where T : GameElement, new()
+        {
+            Random rnd = new Random();
+            for (int i = 0; i < count; i++)
+            {
+                int x, y;
+                do
+                {
+                    x = rnd.Next(1, gameField.Width - 1);
+                    y = rnd.Next(1, gameField.Height - 1);
+                } while (gameField.Grid[x, y] != null || (avoidNear.HasValue && Math.Abs(x - avoidNear.Value.x) <= 1 && Math.Abs(y - avoidNear.Value.y) <= 1));
+
+                gameField.Grid[x, y] = new T();
             }
         }
     }

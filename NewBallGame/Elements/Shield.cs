@@ -11,10 +11,7 @@ namespace BallGame
             Direction = direction;
         }
 
-        public override void Render(IRenderer renderer, int x, int y)
-        {
-            renderer.RenderAt(x, y, Direction.ToString());
-        }
+        public override bool IsMoveable() => false;
 
         public static bool PlaceShield(GameElement?[,] grid, int x, int y, char direction)
         {

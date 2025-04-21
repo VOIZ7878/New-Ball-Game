@@ -13,11 +13,6 @@ namespace BallGame
             Y = y;
         }
 
-        public void Render(IRenderer renderer, int x, int y)
-        {
-            renderer.RenderAt(x, y, "I");
-        }
-
         public void Move(ConsoleKey key, GameField field)
         {
             int newX = X, newY = Y;
@@ -34,7 +29,8 @@ namespace BallGame
                     if (field.PlaceShield(X, Y, '\\')) Score -= 1;
                     return;
             }
-            if (!field.IsWall(newX, newY))
+
+            if (field.IsMoveable(newX, newY))
             {
                 X = newX;
                 Y = newY;

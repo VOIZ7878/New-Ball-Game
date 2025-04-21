@@ -52,36 +52,24 @@ namespace BallGame
 
         public bool IsWall(int x, int y) => x < 0 || x >= width || y < 0 || y >= height || Wall.IsWall(grid[x, y]);
         public bool IsEnemy(int x, int y) => Enemy.IsEnemy(Enemies, x, y);
-
         public bool IsShield(int x, int y, out char dir) => Shield.IsShield(grid[x, y], out dir);
-
         public bool IsEnergyBall(int x, int y) => EnergyBall.IsEnergyBall(grid[x, y]);
+        public void CollectEnergyBall(int x, int y) => EnergyBall.Collect(grid, x, y, ref energyBallCount, Player);
+        public bool PlaceShield(int x, int y, char direction) => Shield.PlaceShield(grid, x, y, direction);
+
+        public bool IsMoveable(int x, int y)
+        {
+            if (x < 0 || x >= width || y < 0 || y >= height)
+                return false;
+
+            return grid[x, y]?.IsMoveable() ?? true;
+        }
 
         private bool AllEnergyBallsReachable()
         {
             return EnergyBall.EnergyBallReachable(this, Player);
         }
-
-        public void PlaceRandomElements<T>(int count, (int x, int y)? avoidNear = null) where T : GameElement, new()
-        {
-            Random rnd = new Random();
-            for (int i = 0; i < count; i++)
-            {
-                int x, y;
-                do
-                {
-                    x = rnd.Next(1, width - 1);
-                    y = rnd.Next(1, height - 1);
-                } while (grid[x, y] != null || (avoidNear.HasValue && Math.Abs(x - avoidNear.Value.x) <= 1 && Math.Abs(y - avoidNear.Value.y) <= 1));
-
-                grid[x, y] = new T();
-            }
-        }
-
-        public void CollectEnergyBall(int x, int y) => EnergyBall.Collect(grid, x, y, ref energyBallCount, Player);
-
-        public bool PlaceShield(int x, int y, char direction) => Shield.PlaceShield(grid, x, y, direction);
-
+        
         public void Update(bool playerMoved)
         {
             if (Ball == null) return;
@@ -104,36 +92,64 @@ namespace BallGame
 
         public void RenderField(IRenderer renderer)
         {
-            renderer.Clear();
+            Console.Clear();
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
+                    Console.SetCursorPosition(x, y);
+
                     if (hint.GetHintPosition() is (int hx, int hy) && hx == x && hy == y)
                     {
-                        if (Ball != null && Ball.X == x && Ball.Y == y) continue;
-                        if (Player.X == x && Player.Y == y) continue;
-                        hint.Render(renderer, x, y);
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Write(hint.GetHintDirection() ?? ' ');
                     }
                     else if (Ball != null && Ball.X == x && Ball.Y == y)
                     {
-                        Ball.Render(renderer, x, y);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Write("•");
                     }
                     else if (Player.X == x && Player.Y == y)
                     {
-                        Player.Render(renderer, x, y);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Write("I");
+                    }
+                    else if (grid[x, y] is Wall)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Write("#");
+                    }
+                    else if (grid[x, y] is EnergyBall)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Write("@");
+                    }
+                    else if (grid[x, y] is Enemy)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Write("E");
+                    }
+                    else if (grid[x, y] is Shield && Shield.IsShield(grid[x, y], out char dir))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Write(dir);
                     }
                     else
                     {
-                        grid[x, y]?.Render(renderer, x, y);
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Write(" ");
                     }
                 }
             }
-            renderer.RenderFrame();
-        }
-        public void SetEnergyBallCount(int count)
-        {
-            energyBallCount = count;
+            Console.ResetColor();
         }
     }
 }

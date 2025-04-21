@@ -13,11 +13,7 @@ namespace BallGame
             Y = y;
         }
 
-        public override void Render(IRenderer renderer, int x, int y)
-        {
-            renderer.RenderAt(x, y, "•");
-        }
-
+        public override bool IsMoveable() => false;
         public void Move(GameField field)
         {
             int newX = X + Dx;
