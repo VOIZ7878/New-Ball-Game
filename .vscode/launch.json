@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": ".NET Core Launch (Program)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        "program": "${workspaceFolder}/NewBallGame/bin/Debug/net9.0/NewBallGame.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/NewBallGame",
+        "stopAtEntry": false,
+        "console": "internalConsole"
+      }
+    ]
+  }

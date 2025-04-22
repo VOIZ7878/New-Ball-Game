@@ -18,9 +18,14 @@ namespace BallGame
                 foreach (var (dx, dy) in new[] { (0, -1), (0, 1), (-1, 0), (1, 0) })
                 {
                     int nx = x + dx, ny = y + dy;
-                    if (nx >= 0 && nx < gameField.Width && ny >= 0 && ny < gameField.Height && !visited[nx, ny] &&
-                        (gameField[nx, ny] == null || gameField[nx, ny] is EnergyBall))
-                        queue.Enqueue((nx, ny));
+                    if (nx >= 0 && nx < gameField.Width && ny >= 0 && ny < gameField.Height && !visited[nx, ny])
+                    {
+                        var cell = gameField[nx, ny];
+                        if (cell == null || cell is EnergyBall || !(cell is Wall || cell is Shield))
+                        {
+                            queue.Enqueue((nx, ny));
+                        }
+                    }
                 }
             }
 

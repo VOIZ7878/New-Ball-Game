@@ -5,17 +5,28 @@ namespace BallGame
     public class GameManager
     {
         private GameField gameField;
+        private readonly IRenderer renderer;
+        private readonly GameResultSaver resultSaver;
+        private const string GameOverMessage = "Game Over! Final Total Score: {0}, Total Time Played: {1:F2} seconds";
+        private const string GameOverNoBallsMessage = "Game Over! No reachable energy balls. Final Total Score: {0}, Total Time Played: {1:F2} seconds";
+        private const string LevelWinMessage = "You win this level! Level Score: {0}, Total Score: {1}, Time: {2:F2} seconds";
+        private double ElapsedTimeSeconds => (DateTime.Now - gameField.StartTime).TotalSeconds;
 
-        public GameManager(GameField field)
+        public GameManager(GameField field, IRenderer renderer)
         {
             gameField = field;
+            resultSaver = new GameResultSaver();
+            this.renderer = renderer;
         }
 
-        public void SaveResults(int totalScore, double totalTimePlayed)
+        public void SaveResults()
         {
-            string filePath = "GameResults.txt";
-            using StreamWriter writer = new StreamWriter(filePath, append: true);
-            writer.WriteLine($"Total Score: {totalScore}, Total Time Played: {totalTimePlayed:F2} seconds");
+            resultSaver.Save(gameField.TotalScore, ElapsedTimeSeconds);
+        }
+
+        public void ShowGameResults()
+        {
+            GameResultSaver.ShowSavedResults();
         }
 
         public void UpdateEnemies()
@@ -27,23 +38,22 @@ namespace BallGame
         {
             if (gameField.IsEnemy(gameField.Player.X, gameField.Player.Y))
             {
-                HandleGameOver("Game Over! Final Total Score: {0}, Total Time Played: {1:F2} seconds");
+                HandleGameOver(GameOverMessage);
                 return true;
             }
 
             if (!CanWin())
             {
-                HandleGameOver("Game Over! No reachable energy balls. Final Total Score: {0}, Total Time Played: {1:F2} seconds");
+                HandleGameOver(GameOverNoBallsMessage);
                 return true;
             }
 
             return false;
         }
 
-        private void HandleGameOver(string message)
+        private void HandleGameOver(string messageTemplate)
         {
-            var elapsedTime = (DateTime.Now - gameField.StartTime).TotalSeconds;
-            EndGame(gameField.TotalScore, elapsedTime, message);
+            EndGame(gameField.TotalScore, ElapsedTimeSeconds, messageTemplate);
         }
 
         public bool CheckLevelCompletion()
@@ -60,10 +70,8 @@ namespace BallGame
         private void HandleLevelCompletion()
         {
             gameField.TotalScore += gameField.Player.Score;
-            var elapsedTime = (DateTime.Now - gameField.StartTime).TotalSeconds;
-
             Console.Clear();
-            Console.WriteLine($"You win this level! Level Score: {gameField.Player.Score}, Total Score: {gameField.TotalScore}, Time: {elapsedTime:F2} seconds");
+            Console.WriteLine(string.Format(LevelWinMessage, gameField.Player.Score, gameField.TotalScore, ElapsedTimeSeconds));
             System.Threading.Thread.Sleep(2000);
 
             RestartLevel(false);
@@ -97,6 +105,7 @@ namespace BallGame
 
         public void EndGame(int totalScore, double elapsedTime, string message)
         {
+            SaveResults();
             Console.Clear();
             Console.WriteLine(string.Format(message, totalScore, elapsedTime));
             System.Threading.Thread.Sleep(2000);

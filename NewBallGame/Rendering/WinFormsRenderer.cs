@@ -40,6 +40,37 @@ namespace BallGame.Rendering
         {
             throw new PlatformNotSupportedException("WinFormsRenderer is only supported on Windows.");
         }
+
+        public void Render(GameField field)
+        {
+            Clear();
+            for (int x = 0; x < field.Width; x++)
+            {
+                for (int y = 0; y < field.Height; y++)
+                {
+                    var element = field[x, y];
+                    if (element != null)
+                    {
+                        RenderAt(x, y, element.ToString());
+                    }
+                }
+            }
+            RenderFrame();
+        }
+
+        public void WriteLine(string message)
+        {
+        }
+
+        public void Pause(int milliseconds)
+        {
+            System.Threading.Thread.Sleep(milliseconds);
+        }
+
+        public void WaitForKeyPress(string message)
+        {
+        }
+
 #endif
     }
 }

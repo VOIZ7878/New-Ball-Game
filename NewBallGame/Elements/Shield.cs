@@ -2,7 +2,7 @@ using BallGame.Rendering;
 
 namespace BallGame
 {
-    class Shield : GameElement
+    public class Shield : GameElement
     {
         public char Direction { get; }
 

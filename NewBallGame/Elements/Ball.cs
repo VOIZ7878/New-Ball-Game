@@ -4,7 +4,6 @@ namespace BallGame
 {
     public class Ball : GameElement
     {
-        public int X, Y;
         public int Dx = -1, Dy = 0;
 
         public Ball(int x, int y)
@@ -21,33 +20,33 @@ namespace BallGame
 
             if (field.IsWall(newX, newY))
             {
-                Dx *= field.IsWall(newX, Y) ? -1 : 1;
-                Dy *= field.IsWall(X, newY) ? -1 : 1;
+                if (field.IsWall(newX, Y)) Dx *= -1;
+                if (field.IsWall(X, newY)) Dy *= -1;
+
+                return;
             }
-            else if (field.IsShield(newX, newY, out char shieldDir))
+
+            if (field.IsShield(newX, newY, out char shieldDir))
             {
                 if (shieldDir == '/')
                 {
                     int temp = Dx;
                     Dx = -Dy;
                     Dy = -temp;
-
-                    X = newX + Dx;
-                    Y = newY + Dy;
-                    return;
                 }
                 else if (shieldDir == '\\')
                 {
                     int temp = Dx;
                     Dx = Dy;
                     Dy = temp;
-
-                    X = newX + Dx;
-                    Y = newY + Dy;
-                    return;
                 }
+
+                X = newX + Dx;
+                Y = newY + Dy;
+                return;
             }
-            else if (field.IsEnergyBall(newX, newY))
+
+            if (field.IsEnergyBall(newX, newY))
             {
                 field.CollectEnergyBall(newX, newY);
             }
@@ -55,5 +54,6 @@ namespace BallGame
             X = newX;
             Y = newY;
         }
+
     }
 }

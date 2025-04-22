@@ -1,10 +1,11 @@
-using BallGame.Rendering;
-
 namespace BallGame
 {
-    public class Player
+    public class Player : GameElement
     {
-        public int X, Y;
+        public override bool IsMoveable()
+        {
+            return true;
+        }
         public int Score { get; private set; } = 0;
 
         public Player(int x, int y)
@@ -13,8 +14,10 @@ namespace BallGame
             Y = y;
         }
 
-        public void Move(ConsoleKey key, GameField field)
+        public override void Move(GameField field, ConsoleKey? key = null)
         {
+            if (key == null) return;
+
             int newX = X, newY = Y;
             switch (key)
             {

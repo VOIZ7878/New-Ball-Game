@@ -34,34 +34,22 @@ namespace BallGame
                     break;
 
                 case ConsoleKey.V:
-                    ShowGameResults();
+                    gameManager.ShowGameResults();
                     break;
 
                 case ConsoleKey.H:
                     gameField.Hint.CalculateHint(gameField);
                     break;
 
+                case ConsoleKey.J:
+                    ILevelLoader loader = new TextFileLevelLoader();
+                    loader.Load(gameField, "Levels/level1.txt");
+                    break;
+                    
                 default:
-                    gameField.Player.Move(key, gameField);
+                    gameField.Player.Move(gameField, key);
                     break;
             }
-        }
-
-        private void ShowGameResults()
-        {
-            Console.Clear();
-            string filePath = "GameResults.txt";
-            if (File.Exists(filePath))
-            {
-                Console.WriteLine("Game Results:");
-                Console.WriteLine(File.ReadAllText(filePath));
-            }
-            else
-            {
-                Console.WriteLine("No results found.");
-            }
-            Console.WriteLine("\nPress any key to return to the game...");
-            Console.ReadKey(true);
         }
     }
 }
