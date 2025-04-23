@@ -6,6 +6,7 @@ namespace BallGame
     {
         private readonly IRenderer renderer;
         private readonly MenuManager menuManager;
+        private GameField? gameField;
 
         public GameRunner()
         {
@@ -22,11 +23,15 @@ namespace BallGame
                 switch (choice)
                 {
                     case MenuChoice.StartGame:
-                        RunGameLoop();
+                        StartNewGame();
                         break;
 
                     case MenuChoice.ShowResults:
                         GameResultSaver.ShowSavedResults();
+                        break;
+
+                    case MenuChoice.TestLevel:
+                        LoadTestLevel("level1.txt");
                         break;
 
                     case MenuChoice.Exit:
@@ -35,23 +40,49 @@ namespace BallGame
             }
         }
 
-        private void RunGameLoop()
+        private void StartNewGame()
         {
-            GameField field = new GameField(10, 6, renderer);
-            GameManager manager = new GameManager(field, renderer);
-            ControlsManager controls = new ControlsManager(field, manager);
+            gameField = CreateEmptyGameField();
+            RunGameLoop(gameField);
+        }
 
-            manager.RestartLevel(true);
+        private GameField CreateEmptyGameField(int width, int height)
+        {
+            return new GameField(width, height, renderer, initialize: false);
+        }
+
+        private GameField CreateEmptyGameField()
+        {
+            return CreateEmptyGameField(10, 10);
+        }
+
+        private void RunGameLoop(GameField field, bool restart = true)
+        {
+            var manager = new GameManager(field, renderer);
+            var controls = new ControlsManager(field, manager);
+
+            if (restart)
+                manager.RestartLevel(true);
 
             while (field.StateRun)
             {
                 renderer.Render(field);
-                controls.HandleInput();
-                field.Update(false);
+                bool playerMoved = controls.HandleInput();
+                field.Update(playerMoved); 
                 System.Threading.Thread.Sleep(60);
             }
 
             manager.SaveResults();
+        }
+
+        private void LoadTestLevel(string fileName)
+        {
+            gameField = CreateEmptyGameField(10, 10);
+
+            ILevelLoader loader = new TextFileLevelLoader();
+            loader.Load(gameField, fileName);
+            
+            RunGameLoop(gameField, restart: false);
         }
     }
 }

@@ -1,3 +1,20 @@
-Total Score: 0, Total Time Played: 27.35 seconds
-Total Score: 0, Total Time Played: 40.76 seconds
-Total Score: 197, Total Time Played: 6.91 seconds
+Score: 0, Time Played: 0.00 seconds, Date: 23/04/2025 17:59:03
+Score: 0, Time Played: 0.00 seconds, Date: 23/04/2025 17:59:04
+Score: 0, Time Played: 0.00 seconds, Date: 23/04/2025 17:59:04
+Score: 0, Time Played: 10.78 seconds, Date: 23/04/2025 17:59:44
+Score: 0, Time Played: 0.00 seconds, Date: 23/04/2025 17:59:45
+Score: 0, Time Played: 0.00 seconds, Date: 23/04/2025 17:59:46
+Score: 0, Time Played: 0.00 seconds, Date: 23/04/2025 17:59:46
+Score: 0, Time Played: 5.42 seconds, Date: 23/04/2025 17:59:56
+Score: 0, Time Played: 0.00 seconds, Date: 23/04/2025 17:59:56
+Score: 0, Time Played: 0.00 seconds, Date: 23/04/2025 17:59:57
+Score: 0, Time Played: 0.00 seconds, Date: 23/04/2025 17:59:57
+Score: 0, Time Played: 0.00 seconds, Date: 23/04/2025 17:59:57
+Score: 0, Time Played: 0.00 seconds, Date: 23/04/2025 17:59:57
+Score: 0, Time Played: 4.26 seconds, Date: 23/04/2025 18:01:58
+Score: 0, Time Played: 22.64 seconds, Date: 23/04/2025 22:10:32
+Score: 0, Time Played: 2.66 seconds, Date: 23/04/2025 22:46:12
+Score: 0, Time Played: 2.96 seconds, Date: 23/04/2025 22:46:20
+Score: 0, Time Played: 3.89 seconds, Date: 23/04/2025 22:52:39
+Score: 0, Time Played: 33.56 seconds, Date: 23/04/2025 22:53:17
+Score: 197, Time Played: 2.56 seconds, Date: 23/04/2025 23:03:38

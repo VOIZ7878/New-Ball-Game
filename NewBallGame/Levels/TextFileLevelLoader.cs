@@ -5,9 +5,14 @@ namespace BallGame
 {
     public class TextFileLevelLoader : ILevelLoader
     {
-        public void Load(GameField gameField, string filePath)
+        public void Load(GameField gameField, string fileName)
         {
-            var lines = File.ReadAllLines(filePath);
+            string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Levels", fileName);
+
+            if (!File.Exists(fullPath))
+                throw new FileNotFoundException("Level file not found at: " + fullPath);
+
+            var lines = File.ReadAllLines(fullPath);
             int height = lines.Length;
             int width = lines[0].Length;
 

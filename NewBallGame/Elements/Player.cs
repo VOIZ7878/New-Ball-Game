@@ -14,35 +14,44 @@ namespace BallGame
             Y = y;
         }
 
-        public override void Move(GameField field, ConsoleKey? key = null)
+        public bool Move(GameField field, ConsoleKey key)
         {
-            if (key == null) return;
+            int dx = 0, dy = 0;
 
-            int newX = X, newY = Y;
             switch (key)
             {
-                case ConsoleKey.W: newY--; break;
-                case ConsoleKey.S: newY++; break;
-                case ConsoleKey.A: newX--; break;
-                case ConsoleKey.D: newX++; break;
                 case ConsoleKey.Spacebar:
                     if (field.PlaceShield(X, Y, '/')) Score -= 1;
-                    return;
+                    return false;
+
                 case ConsoleKey.Enter:
                     if (field.PlaceShield(X, Y, '\\')) Score -= 1;
-                    return;
+                    return false;
+
+                case ConsoleKey.W: dy = -1; break;
+                case ConsoleKey.S: dy = 1; break;
+                case ConsoleKey.A: dx = -1; break;
+                case ConsoleKey.D: dx = 1; break;
+                case ConsoleKey.UpArrow: dy = -1; break;
+                case ConsoleKey.DownArrow: dy = 1; break;
+                case ConsoleKey.LeftArrow: dx = -1; break;
+                case ConsoleKey.RightArrow: dx = 1; break;
+
+                default:
+                    return false;
             }
+
+            int newX = X + dx;
+            int newY = Y + dy;
 
             if (field.IsMoveable(newX, newY))
             {
                 X = newX;
                 Y = newY;
-                field.Update(true);
+                return true;
             }
-            else
-            {
-                field.Update(false);
-            }
+
+            return false;
         }
 
         public void AddScore(int points)

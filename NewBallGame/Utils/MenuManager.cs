@@ -7,6 +7,7 @@ namespace BallGame
     {
         StartGame,
         ShowResults,
+        TestLevel,
         Exit
     }
     public class MenuManager
@@ -26,8 +27,9 @@ namespace BallGame
                 renderer.WriteLine("=== BALL GAME ===");
                 renderer.WriteLine("1. Start Game");
                 renderer.WriteLine("2. Show Results");
-                renderer.WriteLine("3. Exit");
-                renderer.WriteLine("\nSelect option [1-3]:");
+                renderer.WriteLine("3. Test Level");
+                renderer.WriteLine("4. Exit");
+                renderer.WriteLine("\nSelect option [1-4]:");
                 renderer.WriteLine("\nIn-game actions: R - Restart; H - Hint; V - View Results; ESC - Exit");
 
                 var key = Console.ReadKey(true).Key;
@@ -44,6 +46,10 @@ namespace BallGame
 
                     case ConsoleKey.D3:
                     case ConsoleKey.NumPad3:
+                        return MenuChoice.TestLevel;
+
+                    case ConsoleKey.D4:
+                    case ConsoleKey.NumPad4:
                     case ConsoleKey.Escape:
                         return MenuChoice.Exit;
 

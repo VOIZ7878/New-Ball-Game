@@ -52,7 +52,7 @@ namespace BallGame
                 }
             }
 
-            int wallCount = rnd.Next(10, 20);
+            int wallCount = rnd.Next(5, 15);
             for (int i = 0; i < wallCount; i++)
             {
                 int x, y;
@@ -66,6 +66,7 @@ namespace BallGame
                 gameField[x, y] = new Wall();
             }
         }
+
 
         private void PlaceBall()
         {

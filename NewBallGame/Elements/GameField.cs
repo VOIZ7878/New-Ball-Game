@@ -24,15 +24,20 @@ namespace BallGame
         public int Height => height;
         public Hint Hint => hint;
 
-        public GameField(int w, int h, IRenderer renderer)
+
+        public GameField(int w, int h, IRenderer renderer, bool initialize = true)
         {
             width = w;
             height = h;
             grid = new GameElement?[w, h];
 
             Player = new Player(1, 1);
-            var initializer = new LevelBuilder(this);
-            initializer.InitializeField();
+
+            if (initialize)
+            {
+                var initializer = new LevelBuilder(this);
+                initializer.InitializeField();
+            }
 
             StartTime = DateTime.Now;
             gameManager = new GameManager(this, renderer);
@@ -50,8 +55,6 @@ namespace BallGame
             get => energyBallCount;
             set => energyBallCount = value;
         }
-
-        public GameElement? GetElement(int x, int y) => grid[x, y];
 
         public bool IsWall(int x, int y) =>
             x < 0 || x >= width || y < 0 || y >= height || Wall.IsWall(grid[x, y]);

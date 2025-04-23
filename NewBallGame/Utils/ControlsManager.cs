@@ -14,9 +14,10 @@ namespace BallGame
             gameManager = manager;
         }
 
-        public void HandleInput()
+        public bool HandleInput()
         {
-            if (!Console.KeyAvailable) return;
+            if (!Console.KeyAvailable)
+                return false;
 
             ConsoleKey key = Console.ReadKey(true).Key;
 
@@ -27,28 +28,22 @@ namespace BallGame
                     Console.WriteLine($"Exiting game... Final Total Score: {gameField.TotalScore}");
                     System.Threading.Thread.Sleep(1000);
                     gameField.StateRun = false;
-                    break;
+                    return false;
 
                 case ConsoleKey.R:
                     gameManager.RestartLevel(true);
-                    break;
+                    return false;
 
                 case ConsoleKey.V:
                     gameManager.ShowGameResults();
-                    break;
+                    return false;
 
                 case ConsoleKey.H:
                     gameField.Hint.CalculateHint(gameField);
-                    break;
+                    return false;
 
-                case ConsoleKey.J:
-                    ILevelLoader loader = new TextFileLevelLoader();
-                    loader.Load(gameField, "Levels/level1.txt");
-                    break;
-                    
                 default:
-                    gameField.Player.Move(gameField, key);
-                    break;
+                    return gameField.Player.Move(gameField, key);
             }
         }
     }

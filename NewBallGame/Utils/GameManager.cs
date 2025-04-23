@@ -109,7 +109,8 @@ namespace BallGame
             Console.Clear();
             Console.WriteLine(string.Format(message, totalScore, elapsedTime));
             System.Threading.Thread.Sleep(2000);
-            Environment.Exit(0);
+            var app = new GameRunner();
+            app.Run();
         }
     }
 }

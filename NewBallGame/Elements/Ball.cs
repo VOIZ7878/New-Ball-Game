@@ -13,6 +13,7 @@ namespace BallGame
         }
 
         public override bool IsMoveable() => false;
+
         public void Move(GameField field)
         {
             int newX = X + Dx;
@@ -43,6 +44,12 @@ namespace BallGame
 
                 X = newX + Dx;
                 Y = newY + Dy;
+                
+                if (field.IsEnergyBall(X, Y))
+                {
+                    field.CollectEnergyBall(X, Y);
+                }
+
                 return;
             }
 

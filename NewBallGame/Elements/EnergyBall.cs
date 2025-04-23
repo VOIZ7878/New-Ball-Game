@@ -4,7 +4,7 @@ namespace BallGame
 {
     public class EnergyBall : GameElement
     {
-        public override bool IsMoveable() => false;
+        public override bool IsMoveable() => true;
 
         public static void Collect(GameElement?[,] grid, int x, int y, ref int energyBallCount, Player player)
         {

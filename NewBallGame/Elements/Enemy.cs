@@ -21,8 +21,7 @@ namespace BallGame
             int newX = X + dx[dir];
             int newY = Y + dy[dir];
 
-            if (!field.IsWall(newX, newY) && !field.IsEnemy(newX, newY) &&
-                !field.IsShield(newX, newY, out _) && !field.IsEnergyBall(newX, newY))
+            if ( field.IsMoveable(newX, newY) && !field.IsEnemy(newX, newY) && !field.IsEnergyBall(newX, newY))
             {
                 X = newX;
                 Y = newY;
