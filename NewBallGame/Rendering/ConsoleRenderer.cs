@@ -9,11 +9,15 @@ namespace BallGame.Rendering
         {
             Console.Clear();
 
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"Score: {field.Player.Score}");
+            Console.ResetColor();
+
             for (int y = 0; y < field.Height; y++)
             {
                 for (int x = 0; x < field.Width; x++)
                 {
-                    Console.SetCursorPosition(x, y);
+                    Console.SetCursorPosition(x, y + 1);
 
                     if (field.Hint.GetHintPosition() is (int hx, int hy) && hx == x && hy == y)
                     {

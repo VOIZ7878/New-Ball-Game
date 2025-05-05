@@ -72,6 +72,7 @@ namespace BallGame
             gameField.TotalScore += gameField.Player.Score;
             Console.Clear();
             Console.WriteLine(string.Format(LevelWinMessage, gameField.Player.Score, gameField.TotalScore, ElapsedTimeSeconds));
+            SoundEvents.HandleLevelWin();
             System.Threading.Thread.Sleep(2000);
 
             RestartLevel(false);
@@ -81,10 +82,11 @@ namespace BallGame
         {
             if (gameField.EnergyBallCount == 0) return true;
 
-            for (int x = 0; x < gameField.Width; x++)
-                for (int y = 0; y < gameField.Height; y++)
-                    if (gameField[x, y] is EnergyBall && Pathfinding.PathExists(gameField, gameField.Player.X, gameField.Player.Y, x, y))
-                        return true;
+            foreach (var (_, x, y) in gameField.EnergyBallList)
+            {
+                if (Pathfinding.PathExists(gameField, gameField.Player.X, gameField.Player.Y, x, y))
+                    return true;
+            }
 
             return false;
         }

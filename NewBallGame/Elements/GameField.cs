@@ -1,4 +1,5 @@
 using BallGame.Rendering;
+using System.Text.Json;
 
 namespace BallGame
 {
@@ -88,6 +89,131 @@ namespace BallGame
 
             if (gameManager.CheckGameOverConditions()) return;
             if (gameManager.CheckLevelCompletion()) return;
+        }
+
+        public string Serialize()
+        {
+            var gridData = new List<string>();
+            for (int y = 0; y < Height; y++)
+            {
+                var row = new char[Width];
+                for (int x = 0; x < Width; x++)
+                {
+                    row[x] = Grid[x, y] switch
+                    {
+                        Wall => '#',
+                        Player _ => 'P',
+                        Ball _ => 'B',
+                        EnergyBall _ => 'E',
+                        Enemy => 'X',
+                        Shield s when Shield.IsShield(s, out var dir) => dir,
+                        _ => '.'
+                    };
+                }
+                gridData.Add(new string(row));
+            }
+
+            return JsonSerializer.Serialize(new
+            {
+                Width,
+                Height,
+                Grid = gridData,
+                Player = new { Player.X, Player.Y, Player.Score },
+                Ball = Ball != null ? new { Ball.X, Ball.Y, Ball.Dx, Ball.Dy } : null,
+                EnergyBallCount,
+                TotalScore
+            });
+        }
+
+        public static GameField Deserialize(string json, IRenderer renderer)
+        {
+            var data = JsonSerializer.Deserialize<SerializedGameField>(json);
+            if (data == null) throw new Exception("Failed to deserialize game field.");
+
+            var gameField = new GameField(data.Width, data.Height, renderer, initialize: false)
+            {
+                TotalScore = data.TotalScore,
+                EnergyBallCount = data.EnergyBallCount
+            };
+
+            for (int y = 0; y < data.Grid.Count; y++)
+            {
+                for (int x = 0; x < data.Grid[y].Length; x++)
+                {
+                    char symbol = data.Grid[y][x];
+                    switch (symbol)
+                    {
+                        case '#':
+                            gameField[x, y] = new Wall();
+                            break;
+                        case 'P':
+                            gameField.Player = new Player(x, y);
+                            break;
+                        case 'B':
+                            gameField.Ball = new Ball(x, y);
+                            break;
+                        case 'E':
+                            var energyBall = new EnergyBall();
+                            gameField[x, y] = energyBall;
+                            gameField.EnergyBallList.Add((energyBall, x, y));
+                            break;
+                        case 'X':
+                            var enemy = new Enemy(x, y);
+                            gameField[x, y] = enemy;
+                            gameField.Enemies.Add(enemy);
+                            break;
+                        case '/':
+                        case '\\':
+                            gameField[x, y] = new Shield(symbol);
+                            break;
+                    }
+                }
+            }
+
+            if (data.Player != null)
+            {
+                gameField.Player = new Player(data.Player.X, data.Player.Y)
+                {
+                    Score = data.Player.Score 
+                };
+            }
+
+            if (data.Ball != null)
+            {
+                gameField.Ball = new Ball(data.Ball.X, data.Ball.Y)
+                {
+                    Dx = data.Ball.Dx,
+                    Dy = data.Ball.Dy
+                };
+            }
+
+            return gameField;
+        }
+
+        private class SerializedGameField
+        {
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public List<string> Grid { get; set; } = new();
+            public int TotalScore { get; set; }
+            public int EnergyBallCount { get; set; }
+            public PlayerData? Player { get; set; }
+            public BallData? Ball { get; set; }
+
+            public class PlayerData
+            {
+                public int X { get; set; }
+                public int Y { get; set; }
+                public int Score { get; set; }
+            }
+
+            public class BallData
+            {
+                public int X { get; set; }
+                public int Y { get; set; }
+                public int Dx { get; set; }
+                public int Dy { get; set; }
+            }
         }
     }
 }

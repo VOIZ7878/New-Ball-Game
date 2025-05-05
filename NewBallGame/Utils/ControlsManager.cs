@@ -42,6 +42,14 @@ namespace BallGame
                     gameField.Hint.CalculateHint(gameField);
                     return false;
 
+                case ConsoleKey.Q:
+                    Console.WriteLine("Saving game...");
+                    var gameRunner = new GameRunner();
+                    gameRunner.SaveGameState(gameField);
+                    Console.WriteLine("Game saved successfully!");
+                    System.Threading.Thread.Sleep(1000);
+                    return false;
+
                 default:
                     return gameField.Player.Move(gameField, key);
             }

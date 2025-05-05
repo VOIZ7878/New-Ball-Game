@@ -6,7 +6,7 @@ namespace BallGame
         {
             return true;
         }
-        public int Score { get; private set; } = 0;
+        public int Score { get; set; }
 
         public Player(int x, int y)
         {

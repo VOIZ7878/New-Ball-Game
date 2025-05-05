@@ -1,4 +1,5 @@
 using BallGame.Rendering;
+using System.Text.Json;
 
 namespace BallGame
 {
@@ -7,11 +8,14 @@ namespace BallGame
         private readonly IRenderer renderer;
         private readonly MenuManager menuManager;
         private GameField? gameField;
+        private const string SaveFilePath = "GameState.json";
 
         public GameRunner()
         {
             renderer = new ConsoleRenderer();
             menuManager = new MenuManager(renderer);
+
+            SoundManager.PlayBackgroundMusic("background.mp3");
         }
 
         public void Run()
@@ -35,13 +39,31 @@ namespace BallGame
                         break;
 
                     case MenuChoice.Exit:
+                        if (gameField != null)
+                        {
+                            SaveGameState(gameField);
+                        }
                         return;
+
+                    case MenuChoice.LoadGame:
+                        gameField = LoadGameState();
+                        if (gameField != null)
+                        {
+                            RunGameLoop(gameField, restart: false);
+                        }
+                        else
+                        {
+                            Console.WriteLine("No saved game found.");
+                            System.Threading.Thread.Sleep(1000);
+                        }
+                        break;
                 }
             }
         }
 
         private void StartNewGame()
         {
+            SoundManager.PlaySound("start.mp3");
             gameField = CreateEmptyGameField();
             RunGameLoop(gameField);
         }
@@ -68,11 +90,15 @@ namespace BallGame
             {
                 renderer.Render(field);
                 bool playerMoved = controls.HandleInput();
-                field.Update(playerMoved); 
-                System.Threading.Thread.Sleep(60);
+                field.Update(playerMoved);
+
+                SoundEvents.HandleEnergyBallCollected(field);
+
+                System.Threading.Thread.Sleep(50);
             }
 
             manager.SaveResults();
+            SoundEvents.HandleGameOver();
         }
 
         private void LoadTestLevel(string fileName)
@@ -83,6 +109,36 @@ namespace BallGame
             loader.Load(gameField, fileName);
             
             RunGameLoop(gameField, restart: false);
+        }
+
+        public void SaveGameState(GameField field)
+        {
+            try
+            {
+                string json = field.Serialize();
+                File.WriteAllText(SaveFilePath, json);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to save game state: " + ex.Message);
+            }
+        }
+
+        public GameField? LoadGameState()
+        {
+            try
+            {
+                if (File.Exists(SaveFilePath))
+                {
+                    string json = File.ReadAllText(SaveFilePath);
+                    return GameField.Deserialize(json, renderer);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to load game state: " + ex.Message);
+            }
+            return null;
         }
     }
 }

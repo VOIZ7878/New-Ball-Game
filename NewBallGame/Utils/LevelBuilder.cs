@@ -31,6 +31,7 @@ namespace BallGame
             throw new Exception("Failed to generate a passable level.");
         }
 
+
         private void InitializeGrid()
         {
             for (int x = 0; x < gameField.Width; x++)
@@ -138,12 +139,21 @@ namespace BallGame
 
         private bool IsLevelPassable()
         {
-            if (gameField.Ball == null || gameField.EnergyBallList == null || gameField.EnergyBallList.Count == 0)
+            if (gameField.Ball == null || gameField.Player == null || gameField.EnergyBallList == null || gameField.EnergyBallList.Count == 0)
                 return false;
 
             foreach (var (_, x, y) in gameField.EnergyBallList)
             {
                 if (!Pathfinding.PathExists(gameField, gameField.Ball.X, gameField.Ball.Y, x, y))
+                    return false;
+            }
+
+            if (!Pathfinding.PathExists(gameField, gameField.Player.X, gameField.Player.Y, gameField.Ball.X, gameField.Ball.Y))
+                return false;
+
+            foreach (var (_, x, y) in gameField.EnergyBallList)
+            {
+                if (!Pathfinding.PathExists(gameField, gameField.Player.X, gameField.Player.Y, x, y))
                     return false;
             }
 

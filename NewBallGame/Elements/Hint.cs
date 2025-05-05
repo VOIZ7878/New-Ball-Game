@@ -2,13 +2,14 @@ using BallGame.Rendering;
 
 namespace BallGame
 {
-    public class Hint
+    public class Hint : GameElement
     {
         private (int x, int y)? hintPosition;
         private char? hintDirection;
 
         public (int x, int y)? GetHintPosition() => hintPosition;
         public char? GetHintDirection() => hintDirection;
+        public override bool IsMoveable() => true;
 
         public void CalculateHint(GameField gameField)
         {
@@ -17,6 +18,8 @@ namespace BallGame
             int x = gameField.Ball.X, y = gameField.Ball.Y;
             int dx = gameField.Ball.Dx, dy = gameField.Ball.Dy;
 
+            var bestHint = (position: (x: -1, y: -1), direction: (char?)null, priority: int.MinValue);
+
             while (true)
             {
                 x += dx;
@@ -24,28 +27,41 @@ namespace BallGame
 
                 if (gameField.IsWall(x, y) || gameField[x, y] is Shield)
                 {
-                    var potentialPositions = new List<((int x, int y) pos, char dir)>
+                    var potentialPositions = new List<((int x, int y) pos, char dir, int priority)>
                     {
-                        ((x - dx, y), '/'),
-                        ((x, y - dy), '\\'),
-                        ((x - dx, y - dy), '/')
+                        ((x - dx, y), '/', CalculatePriority(gameField, x - dx, y)),
+                        ((x, y - dy), '\\', CalculatePriority(gameField, x, y - dy)),
+                        ((x - dx, y - dy), '/', CalculatePriority(gameField, x - dx, y - dy))
                     };
 
-                    foreach (var (pos, dir) in potentialPositions)
+                    foreach (var (pos, dir, priority) in potentialPositions)
                     {
-                        if (IsValidShieldPosition(gameField, pos.x, pos.y))
+                        if (IsValidShieldPosition(gameField, pos.x, pos.y) && priority > bestHint.priority)
                         {
-                            hintPosition = pos;
-                            hintDirection = dir;
-                            return;
+                            bestHint = (pos, dir, priority);
                         }
                     }
 
-                    hintPosition = null;
-                    hintDirection = null;
-                    return;
+                    break;
                 }
             }
+
+            if (bestHint.priority > int.MinValue)
+            {
+                hintPosition = bestHint.position;
+                hintDirection = bestHint.direction;
+            }
+            else
+            {
+                hintPosition = null;
+                hintDirection = null;
+            }
+        }
+
+        private int CalculatePriority(GameField gameField, int x, int y)
+        {
+            int distanceToBall = Math.Abs(gameField.Ball.X - x) + Math.Abs(gameField.Ball.Y - y);
+            return gameField[x, y] == null ? 100 - distanceToBall : int.MinValue;
         }
 
         private bool IsValidShieldPosition(GameField gameField, int x, int y)

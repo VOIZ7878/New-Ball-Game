@@ -6,6 +6,7 @@ namespace BallGame
     public enum MenuChoice
     {
         StartGame,
+        LoadGame,
         ShowResults,
         TestLevel,
         Exit
@@ -25,12 +26,13 @@ namespace BallGame
             {
                 renderer.Clear();
                 renderer.WriteLine("=== BALL GAME ===");
-                renderer.WriteLine("1. Start Game");
-                renderer.WriteLine("2. Show Results");
-                renderer.WriteLine("3. Test Level");
-                renderer.WriteLine("4. Exit");
-                renderer.WriteLine("\nSelect option [1-4]:");
-                renderer.WriteLine("\nIn-game actions: R - Restart; H - Hint; V - View Results; ESC - Exit");
+                renderer.WriteLine("1. New Game");
+                renderer.WriteLine("2. Load Game");
+                renderer.WriteLine("3. Show Results");
+                renderer.WriteLine("4. Test Level");
+                renderer.WriteLine("5. Exit");
+                renderer.WriteLine("\nSelect option [1-5]:");
+                renderer.WriteLine("\nIn-game actions: R - Restart; H - Hint; V - View Results; F5 - Save Game; ESC - Exit");
 
                 var key = Console.ReadKey(true).Key;
 
@@ -42,14 +44,18 @@ namespace BallGame
 
                     case ConsoleKey.D2:
                     case ConsoleKey.NumPad2:
-                        return MenuChoice.ShowResults;
+                        return MenuChoice.LoadGame;
 
                     case ConsoleKey.D3:
                     case ConsoleKey.NumPad3:
-                        return MenuChoice.TestLevel;
+                        return MenuChoice.ShowResults;
 
                     case ConsoleKey.D4:
                     case ConsoleKey.NumPad4:
+                        return MenuChoice.TestLevel;
+
+                    case ConsoleKey.D5:
+                    case ConsoleKey.NumPad5:
                     case ConsoleKey.Escape:
                         return MenuChoice.Exit;
 

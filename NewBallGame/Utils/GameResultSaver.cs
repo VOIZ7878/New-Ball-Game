@@ -20,9 +20,15 @@ namespace BallGame
 
                 var updatedEntries = existingEntries
                     .Append(newEntry)
-                    .Reverse()
+                    .Select(entry =>
+                    {
+                        var parts = entry.Split(new[] { ", " }, StringSplitOptions.None);
+                        int entryScore = int.Parse(parts[0].Split(':')[1].Trim());
+                        return new { Entry = entry, Score = entryScore };
+                    })
+                    .OrderByDescending(e => e.Score)
                     .Take(MaxSavedResults)
-                    .Reverse()
+                    .Select(e => e.Entry)
                     .ToArray();
 
                 File.WriteAllLines(ResultsFilePath, updatedEntries);
