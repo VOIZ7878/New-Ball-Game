@@ -31,7 +31,7 @@ namespace BallGame
                         break;
 
                     case MenuChoice.ShowResults:
-                        GameResultSaver.ShowSavedResults();
+                        GameResultManager.ShowSavedResults();
                         break;
 
                     case MenuChoice.TestLevel:
@@ -39,11 +39,10 @@ namespace BallGame
                         break;
 
                     case MenuChoice.Exit:
-                        if (gameField != null)
-                        {
-                            SaveGameState(gameField);
-                        }
-                        return;
+                        Console.Clear();
+                        System.Threading.Thread.Sleep(1000);
+                        Environment.Exit(0);
+                        break;
 
                     case MenuChoice.LoadGame:
                         gameField = LoadGameState();
@@ -63,7 +62,7 @@ namespace BallGame
 
         private void StartNewGame()
         {
-            SoundManager.PlaySound("start.mp3");
+            SoundEvents.HandleGameStart();
             gameField = CreateEmptyGameField();
             RunGameLoop(gameField);
         }
@@ -84,15 +83,15 @@ namespace BallGame
             var controls = new ControlsManager(field, manager);
 
             if (restart)
+            {
                 manager.RestartLevel(true);
+            }
 
             while (field.StateRun)
             {
                 renderer.Render(field);
                 bool playerMoved = controls.HandleInput();
                 field.Update(playerMoved);
-
-                SoundEvents.HandleEnergyBallCollected(field);
 
                 System.Threading.Thread.Sleep(50);
             }

@@ -6,7 +6,7 @@ namespace BallGame
     {
         private GameField gameField;
         private readonly IRenderer renderer;
-        private readonly GameResultSaver resultSaver;
+        private readonly GameResultManager resultSaver;
         private const string GameOverMessage = "Game Over! Final Total Score: {0}, Total Time Played: {1:F2} seconds";
         private const string GameOverNoBallsMessage = "Game Over! No reachable energy balls. Final Total Score: {0}, Total Time Played: {1:F2} seconds";
         private const string LevelWinMessage = "You win this level! Level Score: {0}, Total Score: {1}, Time: {2:F2} seconds";
@@ -15,7 +15,7 @@ namespace BallGame
         public GameManager(GameField field, IRenderer renderer)
         {
             gameField = field;
-            resultSaver = new GameResultSaver();
+            resultSaver = new GameResultManager();
             this.renderer = renderer;
         }
 
@@ -26,7 +26,7 @@ namespace BallGame
 
         public void ShowGameResults()
         {
-            GameResultSaver.ShowSavedResults();
+            GameResultManager.ShowSavedResults();
         }
 
         public void UpdateEnemies()
@@ -72,7 +72,6 @@ namespace BallGame
             gameField.TotalScore += gameField.Player.Score;
             Console.Clear();
             Console.WriteLine(string.Format(LevelWinMessage, gameField.Player.Score, gameField.TotalScore, ElapsedTimeSeconds));
-            SoundEvents.HandleLevelWin();
             System.Threading.Thread.Sleep(2000);
 
             RestartLevel(false);

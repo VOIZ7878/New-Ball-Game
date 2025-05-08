@@ -4,6 +4,7 @@ namespace BallGame
 {
     public class Enemy : GameElement
     {
+
         public Enemy(int x, int y)
         {
             X = x;
@@ -12,7 +13,7 @@ namespace BallGame
 
         public override bool IsMoveable() => false;
 
-        public override void Move(GameField field, ConsoleKey? key = null)
+        public virtual void Move(GameField field, ConsoleKey? key = null)
         {
             Random rnd = new Random();
             int[] dx = { -1, 1, 0, 0 };
@@ -21,7 +22,7 @@ namespace BallGame
             int newX = X + dx[dir];
             int newY = Y + dy[dir];
 
-            if ( field.IsMoveable(newX, newY) && !field.IsEnemy(newX, newY) && !field.IsEnergyBall(newX, newY))
+            if (field.IsMoveable(newX, newY) && !field.IsEnemy(newX, newY) && !field.IsEnergyBall(newX, newY))
             {
                 X = newX;
                 Y = newY;

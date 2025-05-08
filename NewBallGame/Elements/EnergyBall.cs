@@ -11,6 +11,7 @@ namespace BallGame
             grid[x, y] = null;
             energyBallCount--;
             player.AddScore(100);
+            SoundManager.PlaySound("collect.mp3");
         }
 
         public static bool IsEnergyBall(GameElement? element)

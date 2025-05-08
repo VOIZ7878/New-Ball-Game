@@ -27,7 +27,7 @@ namespace BallGame
                 renderer.Clear();
                 renderer.WriteLine("=== BALL GAME ===");
                 renderer.WriteLine("1. New Game");
-                renderer.WriteLine("2. Load Game");
+                renderer.WriteLine("2. Continue");
                 renderer.WriteLine("3. Show Results");
                 renderer.WriteLine("4. Test Level");
                 renderer.WriteLine("5. Exit");

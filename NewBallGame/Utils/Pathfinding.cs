@@ -31,5 +31,14 @@ namespace BallGame
 
             return false;
         }
+
+        public static (int, int)? FindNextStep(GameField field, int startX, int startY, int targetX, int targetY)
+        {
+            if (startX < targetX) return (startX + 1, startY);
+            if (startX > targetX) return (startX - 1, startY);
+            if (startY < targetY) return (startX, startY + 1);
+            if (startY > targetY) return (startX, startY - 1);
+            return null;
+        }
     }
 }

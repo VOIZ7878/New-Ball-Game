@@ -62,7 +62,9 @@ namespace BallGame
                     x = rnd.Next(1, gameField.Width - 1);
                     y = rnd.Next(1, gameField.Height - 1);
                 }
-                while (gameField[x, y] != null || (gameField.Player != null && gameField.Player.X == x && gameField.Player.Y == y));
+                while (gameField[x, y] != null || 
+                       (gameField.Ball != null && Math.Abs(x - gameField.Ball.X) <= 1 && Math.Abs(y - gameField.Ball.Y) <= 1) || 
+                       (gameField.Player != null && gameField.Player.X == x && gameField.Player.Y == y));
 
                 gameField[x, y] = new Wall();
             }

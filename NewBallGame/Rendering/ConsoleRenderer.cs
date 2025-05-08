@@ -23,6 +23,7 @@ namespace BallGame.Rendering
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.Write(field.Hint.GetHintDirection() ?? ' ');
+                        Console.ResetColor();
                         continue;
                     }
 
@@ -30,6 +31,7 @@ namespace BallGame.Rendering
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write("•");
+                        Console.ResetColor();
                         continue;
                     }
 
@@ -37,12 +39,25 @@ namespace BallGame.Rendering
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write("I");
+                        Console.ResetColor();
                         continue;
                     }
 
                     var cell = field[x, y];
                     switch (cell)
                     {
+                        case SmartEnemy:
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            Console.Write("S");
+                            break;
+                        case BossEnemy:
+                            Console.ForegroundColor = ConsoleColor.DarkRed;
+                            Console.Write("B");
+                            break;
+                        case Enemy:
+                            Console.ForegroundColor = ConsoleColor.Magenta;
+                            Console.Write("E");
+                            break;
                         case Wall:
                             Console.ForegroundColor = ConsoleColor.Gray;
                             Console.Write("#");
@@ -50,10 +65,6 @@ namespace BallGame.Rendering
                         case EnergyBall:
                             Console.ForegroundColor = ConsoleColor.Cyan;
                             Console.Write("@");
-                            break;
-                        case Enemy:
-                            Console.ForegroundColor = ConsoleColor.Magenta;
-                            Console.Write("E");
                             break;
                         case Shield s when Shield.IsShield(s, out var dir):
                             Console.ForegroundColor = ConsoleColor.Blue;
@@ -64,6 +75,7 @@ namespace BallGame.Rendering
                             Console.Write(" ");
                             break;
                     }
+                    Console.ResetColor();
                 }
             }
 

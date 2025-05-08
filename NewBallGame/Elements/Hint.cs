@@ -13,55 +13,91 @@ namespace BallGame
 
         public void CalculateHint(GameField gameField)
         {
-            if (gameField.Ball == null) return;
+            if (gameField.Ball == null || gameField.EnergyBallCount == 0)
+                return;
 
-            int x = gameField.Ball.X, y = gameField.Ball.Y;
-            int dx = gameField.Ball.Dx, dy = gameField.Ball.Dy;
+            var start = (x: gameField.Ball.X, y: gameField.Ball.Y);
+            var dir = (dx: gameField.Ball.Dx, dy: gameField.Ball.Dy);
 
-            var bestHint = (position: (x: -1, y: -1), direction: (char?)null, priority: int.MinValue);
+            var visited = new HashSet<(int x, int y, int dx, int dy)>();
+            var queue = new Queue<(int x, int y, int dx, int dy, List<(int sx, int sy, char dir)> shields)>();
+            queue.Enqueue((start.x, start.y, dir.dx, dir.dy, new List<(int, int, char)>()));
 
-            while (true)
+            while (queue.Count > 0)
             {
-                x += dx;
-                y += dy;
+                var (x, y, dx, dy, shields) = queue.Dequeue();
 
-                if (gameField.IsWall(x, y) || gameField[x, y] is Shield)
+                int cx = x, cy = y;
+                for (int step = 0; step < 50; step++)
                 {
-                    var potentialPositions = new List<((int x, int y) pos, char dir, int priority)>
-                    {
-                        ((x - dx, y), '/', CalculatePriority(gameField, x - dx, y)),
-                        ((x, y - dy), '\\', CalculatePriority(gameField, x, y - dy)),
-                        ((x - dx, y - dy), '/', CalculatePriority(gameField, x - dx, y - dy))
-                    };
+                    cx += dx;
+                    cy += dy;
 
-                    foreach (var (pos, dir, priority) in potentialPositions)
+                    if (!gameField.IsInside(cx, cy))
+                        break;
+
+                    var cell = gameField[cx, cy];
+
+                    if (cell is EnergyBall)
                     {
-                        if (IsValidShieldPosition(gameField, pos.x, pos.y) && priority > bestHint.priority)
+                        if (shields.Count > 0)
                         {
-                            bestHint = (pos, dir, priority);
+                            var (sx, sy, sdir) = shields[0];
+                            hintPosition = (sx, sy);
+                            hintDirection = sdir;
+                            return;
+                        }
+                        else
+                        {
+                            hintPosition = null;
+                            hintDirection = null;
+                            return;
                         }
                     }
 
-                    break;
+                    if (cell is Wall || cell is Shield)
+                        break;
+
+                    if (shields.Count >= 5)
+                        continue;
+
+                    foreach (char mirror in new[] { '/', '\\' })
+                    {
+                        int nx = cx, ny = cy;
+                        if (!IsValidShieldPosition(gameField, nx, ny))
+                            continue;
+
+                        int ndx = dx, ndy = dy;
+                        Reflect(mirror, ref ndx, ref ndy);
+
+                        if (!visited.Contains((nx, ny, ndx, ndy)))
+                        {
+                            var newShields = new List<(int, int, char)>(shields) { (nx, ny, mirror) };
+                            queue.Enqueue((nx, ny, ndx, ndy, newShields));
+                            visited.Add((nx, ny, ndx, ndy));
+                        }
+                    }
                 }
             }
 
-            if (bestHint.priority > int.MinValue)
-            {
-                hintPosition = bestHint.position;
-                hintDirection = bestHint.direction;
-            }
-            else
-            {
-                hintPosition = null;
-                hintDirection = null;
-            }
+            hintPosition = null;
+            hintDirection = null;
         }
 
-        private int CalculatePriority(GameField gameField, int x, int y)
+        private void Reflect(char mirror, ref int dx, ref int dy)
         {
-            int distanceToBall = Math.Abs(gameField.Ball.X - x) + Math.Abs(gameField.Ball.Y - y);
-            return gameField[x, y] == null ? 100 - distanceToBall : int.MinValue;
+            if (mirror == '/')
+            {
+                int temp = dx;
+                dx = -dy;
+                dy = -temp;
+            }
+            else if (mirror == '\\')
+            {
+                int temp = dx;
+                dx = dy;
+                dy = temp;
+            }
         }
 
         private bool IsValidShieldPosition(GameField gameField, int x, int y)

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NewBallGame")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1d39496257ff4e50ed6dc3add1f0fa1c3853eb30")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c0a4a03cf73a86a8bc1c0e4185880eff8cdf4943")]
 [assembly: System.Reflection.AssemblyProductAttribute("NewBallGame")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NewBallGame")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

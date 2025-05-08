@@ -73,23 +73,15 @@ namespace BallGame
 
     public static class SoundEvents
     {
-        public static void HandleEnergyBallCollected(GameField field)
+        public static void HandleGameStart()
         {
-            if (field.EnergyBallCount < field.EnergyBallList.Count)
-            {
-                SoundManager.PlaySound("collect.mp3");
-            }
+            SoundManager.PlaySound("start.mp3");
         }
 
         public static void HandleGameOver()
         {
             SoundManager.StopBackgroundMusic();
             SoundManager.PlaySound("lose.mp3");
-        }
-
-        public static void HandleLevelWin()
-        {
-            SoundManager.PlaySound("menu.mp3");
         }
     }
 }

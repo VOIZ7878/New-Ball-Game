@@ -75,6 +75,11 @@ namespace BallGame
             return grid[x, y]?.IsMoveable() ?? true;
         }
 
+        public bool IsInside(int x, int y)
+        {
+            return x >= 0 && x < width && y >= 0 && y < height;
+        }
+
         public void Update(bool playerMoved)
         {
             if (Ball == null) return;

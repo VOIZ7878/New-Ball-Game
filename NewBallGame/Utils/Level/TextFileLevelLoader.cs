@@ -50,6 +50,16 @@ namespace BallGame
                             gameField[x, y] = enemy;
                             gameField.Enemies.Add(enemy);
                             break;
+                        case 'S':
+                            var Senemy = new SmartEnemy(x, y);
+                            gameField[x, y] = Senemy;
+                            gameField.Enemies.Add(Senemy);
+                            break;
+                        case 'Q':
+                            var Benemy = new BossEnemy(x, y);
+                            gameField[x, y] = Benemy;
+                            gameField.Enemies.Add(Benemy);
+                            break;
                         case '.':
                             break;
                         default:

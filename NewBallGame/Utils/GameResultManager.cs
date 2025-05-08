@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace BallGame
 {
-    public class GameResultSaver
+    public class GameResultManager
     {
         private const string ResultsFilePath = "GameResults.txt";
         private const int MaxSavedResults = 20;

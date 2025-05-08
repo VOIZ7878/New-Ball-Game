@@ -18,6 +18,7 @@ namespace BallGame
             if (grid[x, y] == null)
             {
                 grid[x, y] = new Shield(direction);
+                SoundManager.PlaySound("shield.mp3");
                 return true;
             }
             return false;
