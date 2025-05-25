@@ -1,76 +1,110 @@
 using System.Drawing;
+using System.Threading;
+using System.Windows.Forms;
+using BallGame.Rendering;
 
-namespace BallGame.Rendering
+namespace BallGame
 {
     public class WinFormsRenderer : IRenderer
     {
-#if WINDOWS
-        private Graphics graphics;
+        private readonly Panel panel;
+        private readonly RichTextBox consoleBox;
 
-        public WinFormsRenderer(Graphics graphics)
+        public WinFormsRenderer(DoubleBufferedPanel panel, RichTextBox consoleBox)
         {
-            this.graphics = graphics;
+            this.panel = panel;
+            this.consoleBox = consoleBox;
+            this.panel.Paint += OnPaint;
         }
 
-        public void RenderAt(int x, int y, string content)
-        {
-            graphics.DrawString(content, SystemFonts.DefaultFont, Brushes.Black, x * 10, y * 10);
-        }
+        public GameField? FieldToRender { get; set; }
 
-        public void Clear()
+        private void OnPaint(object? sender, PaintEventArgs e)
         {
-            graphics.Clear(Color.White);
-        }
+            if (FieldToRender == null) return;
+            var g = e.Graphics;
+            int cellSize = 20;
+            var font = new Font("Courier New", 12, FontStyle.Bold);
 
-        public void RenderFrame()
-        {
-        }
-#else
-        public void RenderAt(int x, int y, string content)
-        {
-            throw new PlatformNotSupportedException("WinFormsRenderer is only supported on Windows.");
-        }
-
-        public void Clear()
-        {
-            throw new PlatformNotSupportedException("WinFormsRenderer is only supported on Windows.");
-        }
-
-        public void RenderFrame()
-        {
-            throw new PlatformNotSupportedException("WinFormsRenderer is only supported on Windows.");
-        }
-
-        public void Render(GameField field)
-        {
-            Clear();
-            for (int x = 0; x < field.Width; x++)
+            for (int y = 0; y < FieldToRender.Height; y++)
             {
-                for (int y = 0; y < field.Height; y++)
+                for (int x = 0; x < FieldToRender.Width; x++)
                 {
-                    var element = field[x, y];
-                    if (element != null)
+                    var element = FieldToRender[x, y];
+                    if (element is Wall)
                     {
-                        RenderAt(x, y, element.ToString());
+                        var visual = BallGame.Rendering.ElementVisuals.Get(element);
+                        g.DrawString(visual.Symbol, font, visual.WinFormsBrush, x * cellSize, y * cellSize);
                     }
                 }
             }
-            RenderFrame();
+
+            var player = FieldToRender.Player;
+            var playerVisual = BallGame.Rendering.ElementVisuals.Get(player);
+            g.DrawString(playerVisual.Symbol, font, playerVisual.WinFormsBrush, player.X * cellSize, player.Y * cellSize);
+
+            if (FieldToRender.Ball is { X: var bx, Y: var by })
+            {
+                var ballVisual = BallGame.Rendering.ElementVisuals.Get(FieldToRender.Ball);
+                g.DrawString(ballVisual.Symbol, font, ballVisual.WinFormsBrush, bx * cellSize, by * cellSize);
+            }
+
+            for (int y = 0; y < FieldToRender.Height; y++)
+            {
+                for (int x = 0; x < FieldToRender.Width; x++)
+                {
+                    var element = FieldToRender[x, y];
+                    if (element != null && !(element is Wall) && element != player && element != FieldToRender.Ball)
+                    {
+                        var visual = BallGame.Rendering.ElementVisuals.Get(element);
+                        g.DrawString(visual.Symbol, font, visual.WinFormsBrush, x * cellSize, y * cellSize);
+                    }
+                }
+            }
+
+            var hintPos = FieldToRender.Hint.GetHintPosition();
+            var hintDir = FieldToRender.Hint.GetHintDirection();
+            if (hintPos.HasValue && hintDir.HasValue)
+            {
+                var x = hintPos.Value.x;
+                var y = hintPos.Value.y;
+                var hintVisual = BallGame.Rendering.ElementVisuals.Get(FieldToRender.Hint);
+                g.DrawString(hintDir.Value.ToString(), font, hintVisual.WinFormsBrush, x * cellSize, y * cellSize);
+            }
+        }
+        public void Clear()
+        {
+            if (panel.InvokeRequired)
+                panel.Invoke(() => panel.Refresh());
+            else
+                panel.Refresh();
         }
 
         public void WriteLine(string message)
         {
+            if (consoleBox.InvokeRequired)
+                consoleBox.Invoke(() => consoleBox.AppendText(message + "\n"));
+            else
+                consoleBox.AppendText(message + "\n");
         }
 
         public void Pause(int milliseconds)
         {
-            System.Threading.Thread.Sleep(milliseconds);
+            Thread.Sleep(milliseconds);
         }
-
-        public void WaitForKeyPress(string message)
+        
+        public void PreRender(GameField field)
         {
+            Clear();
         }
 
-#endif
+        public void PostRender(GameField field)
+        {
+            FieldToRender = field;
+            if (panel.InvokeRequired)
+                panel.Invoke(() => panel.Invalidate());
+            else
+                panel.Invalidate();
+        }
     }
 }

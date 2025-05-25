@@ -1,0 +1,28 @@
+# Build artifacts
+bin/
+obj/
+publish/
+TestResults/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+
+# VS Code
+.vscode/
+
+# Logs, backup, temp
+*.log
+*.tmp
+*.bak
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
