@@ -28,52 +28,41 @@ namespace BallGame
 
         public async Task<MenuChoice> ShowMainMenuAsync()
         {
+            await Task.Yield();
+            var menuItems = new[]
+            {
+                ("New Game", MenuChoice.StartGame),
+                ("Continue", MenuChoice.LoadGame),
+                ("Show Results", MenuChoice.ShowResults),
+                ("Settings", MenuChoice.Settings),
+                ("Exit", MenuChoice.Exit),
+                ("Test Level", MenuChoice.TestLevel)
+            };
+            int selected = 0;
+
             while (true)
             {
                 renderer.Clear();
                 renderer.WriteLine("=== BALL GAME ===");
-                renderer.WriteLine("1. New Game");
-                renderer.WriteLine("2. Continue");
-                renderer.WriteLine("3. Show Results");
-                renderer.WriteLine("4. Settings");
-                renderer.WriteLine("5. Exit");
-                renderer.WriteLine("6. Test Level");
-                renderer.WriteLine("\nSelect option [1-6]:");
-                renderer.WriteLine("\nIn-game actions: R - Restart; H - Hint; V - View Results; F5 - Save Game; ESC - Exit");
+                for (int i = 0; i < menuItems.Length; i++)
+                {
+                    string prefix = i == selected ? "> " : "  ";
+                    renderer.WriteLine($"{prefix}{i + 1}. {menuItems[i].Item1}");
+                }
+                renderer.WriteLine("In-game actions: R - Restart; H - Hint; V - View Results; Q - Save Game; ESC - Exit");
 
                 var key = inputManager.ReadKey(true);
-
-                switch (key)
+                if (key == ConsoleKey.UpArrow)
                 {
-                    case ConsoleKey.D1:
-                    case ConsoleKey.NumPad1:
-                        return MenuChoice.StartGame;
-
-                    case ConsoleKey.D2:
-                    case ConsoleKey.NumPad2:
-                        return MenuChoice.LoadGame;
-
-                    case ConsoleKey.D3:
-                    case ConsoleKey.NumPad3:
-                        return MenuChoice.ShowResults;
-
-                    case ConsoleKey.D4:
-                    case ConsoleKey.NumPad4:
-                        return MenuChoice.Settings;
-
-                    case ConsoleKey.D5:
-                    case ConsoleKey.NumPad5:
-                    case ConsoleKey.Escape:
-                        return MenuChoice.Exit;
-
-                    case ConsoleKey.D6:
-                    case ConsoleKey.NumPad6:
-                        return MenuChoice.TestLevel;
-
-                    default:
-                        renderer.WriteLine("Invalid choice. Try again...");
-                        await Task.Delay(1000);
-                        break;
+                    selected = (selected - 1 + menuItems.Length) % menuItems.Length;
+                }
+                else if (key == ConsoleKey.DownArrow)
+                {
+                    selected = (selected + 1) % menuItems.Length;
+                }
+                else if (key == ConsoleKey.Enter)
+                {
+                    return menuItems[selected].Item2;
                 }
             }
         }

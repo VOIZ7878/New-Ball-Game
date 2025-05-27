@@ -16,39 +16,23 @@ namespace BallGame
 
         public bool Move(GameField field, ConsoleKey key)
         {
-            int dx = 0, dy = 0;
-
-            switch (key)
+            if (BallGame.Input.KeyMap.ShieldKeys.TryGetValue(key, out char shieldChar))
             {
-                case ConsoleKey.Spacebar:
-                    if (field.PlaceShield(X, Y, '/')) Score -= 1;
-                    return false;
-
-                case ConsoleKey.Enter:
-                    if (field.PlaceShield(X, Y, '\\')) Score -= 1;
-                    return false;
-
-                case ConsoleKey.W: dy = -1; break;
-                case ConsoleKey.S: dy = 1; break;
-                case ConsoleKey.A: dx = -1; break;
-                case ConsoleKey.D: dx = 1; break;
-                case ConsoleKey.UpArrow: dy = -1; break;
-                case ConsoleKey.DownArrow: dy = 1; break;
-                case ConsoleKey.LeftArrow: dx = -1; break;
-                case ConsoleKey.RightArrow: dx = 1; break;
-
-                default:
-                    return false;
+                if (field.PlaceShield(X, Y, shieldChar)) Score -= 1;
+                return false;
             }
 
-            int newX = X + dx;
-            int newY = Y + dy;
-
-            if (field.IsMoveable(newX, newY))
+            if (BallGame.Input.KeyMap.MovementKeys.TryGetValue(key, out var delta))
             {
-                X = newX;
-                Y = newY;
-                return true;
+                int newX = X + delta.dx;
+                int newY = Y + delta.dy;
+                if (field.IsMoveable(newX, newY))
+                {
+                    X = newX;
+                    Y = newY;
+                    return true;
+                }
+                return false;
             }
 
             return false;

@@ -5,28 +5,21 @@ namespace BallGame.Input
 {
     public class WinFormsInputManager : IInputManager
     {
+        public event KeyPressedHandler? KeyPressed;
+
         private ConsoleKey? lastKey = null;
 
         public void OnKeyDown(object? sender, KeyEventArgs e)
         {
-            lastKey = e.KeyCode switch
+            if (KeyMap.KeyToConsoleKey.TryGetValue(e.KeyCode, out var consoleKey))
             {
-                Keys.W => ConsoleKey.W,
-                Keys.A => ConsoleKey.A,
-                Keys.S => ConsoleKey.S,
-                Keys.D => ConsoleKey.D,
-                Keys.Up => ConsoleKey.UpArrow,
-                Keys.Down => ConsoleKey.DownArrow,
-                Keys.Left => ConsoleKey.LeftArrow,
-                Keys.Right => ConsoleKey.RightArrow,
-                Keys.Space => ConsoleKey.Spacebar,
-                Keys.P => ConsoleKey.Enter,
-                Keys.R => ConsoleKey.R,
-                Keys.Escape => ConsoleKey.Escape,
-                Keys.V => ConsoleKey.V,
-                Keys.H => ConsoleKey.H,
-                _ => null
-            };
+                lastKey = consoleKey;
+                KeyPressed?.Invoke(consoleKey);
+            }
+            else
+            {
+                lastKey = null;
+            }
         }
 
         public bool KeyAvailable => lastKey.HasValue;

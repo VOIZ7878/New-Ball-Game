@@ -8,16 +8,16 @@ namespace BallGame
 {
     public class ControlsManager
     {
-        private GameField gameField;
-        private GameManager gameManager;
+        private readonly GameField gameField;
+        private readonly GameManager gameManager;
         private readonly StateManager gameStateManager;
         private readonly IInputManager inputManager;
         private readonly IRenderer renderer;
 
         public ControlsManager(GameField field, GameManager manager, StateManager gameStateManager, IInputManager inputManager, IRenderer renderer)
         {
-            gameField = field;
-            gameManager = manager;
+            this.gameField = field;
+            this.gameManager = manager;
             this.gameStateManager = gameStateManager;
             this.inputManager = inputManager;
             this.renderer = renderer;
@@ -30,38 +30,36 @@ namespace BallGame
 
             ConsoleKey key = inputManager.ReadKey(true);
 
-            switch (key)
+            if (KeyMap.ConsoleKeyToInGameAction.TryGetValue(key, out var action))
             {
-                case ConsoleKey.Escape:
-                    renderer.Clear();
-                    renderer.WriteLine($"Exiting game... Final Total Score: {gameField.TotalScore}");
-                    renderer.Pause(1000);
-                    gameStateManager.SaveGameState(gameField);
-                    return (GameState.MainMenu, false);
-
-                case ConsoleKey.R:
-                    gameManager.RestartLevel(true);
-                    return (GameState.Running, false);
-
-                case ConsoleKey.V:
-                    gameManager.ShowGameResults();
-                    return (GameState.Running, false);
-
-                case ConsoleKey.H:
-                    gameField.Hint.CalculateHint(gameField);
-                    return (GameState.Running, false);
-
-                case ConsoleKey.Q:
-                    renderer.WriteLine("Saving game...");
-                    gameStateManager.SaveGameState(gameField);
-                    renderer.WriteLine("Game saved successfully!");
-                    renderer.Pause(1000);
-                    return (GameState.Running, false);
-
-                default:
-                    bool moved = gameField.Player.Move(gameField, key);
-                    return (GameState.Running, moved);
+                switch (action)
+                {
+                    case KeyMap.InGameAction.ExitToMenu:
+                        renderer.Clear();
+                        renderer.WriteLine($"Exiting game... Final Total Score: {gameField.TotalScore}");
+                        renderer.Pause(1000);
+                        gameStateManager.SaveGameState(gameField);
+                        return (GameState.MainMenu, false);
+                    case KeyMap.InGameAction.Restart:
+                        gameManager.RestartLevel(true);
+                        return (GameState.Running, false);
+                    case KeyMap.InGameAction.ShowResults:
+                        gameManager.ShowGameResults();
+                        return (GameState.Running, false);
+                    case KeyMap.InGameAction.Hint:
+                        gameField.Hint.CalculateHint(gameField);
+                        return (GameState.Running, false);
+                    case KeyMap.InGameAction.Save:
+                        renderer.WriteLine("Saving game...");
+                        gameStateManager.SaveGameState(gameField);
+                        renderer.WriteLine("Game saved successfully!");
+                        renderer.Pause(1000);
+                        return (GameState.Running, false);
+                }
             }
+
+            bool moved = gameField.Player.Move(gameField, key);
+            return (GameState.Running, moved);
         }
     }
 }
