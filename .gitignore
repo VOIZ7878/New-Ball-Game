@@ -26,3 +26,4 @@ Thumbs.db
 *.nupkg
 *.snupkg
 packages/
+NewBallGame/GameState.json

@@ -1,5 +1,25 @@
+using BallGame.Rendering;
+using BallGame.Utils;
+using BallGame.Input;
+
 namespace BallGame
 {
+    public partial class GameField
+    {
+        public bool IsMoveable(int x, int y)
+        {
+            if (x < 0 || x >= width || y < 0 || y >= height) return false;
+            return grid[x, y]?.IsMoveable() ?? true;
+        }
+
+        public bool IsInside(int x, int y)
+        {
+            return x >= 0 && x < width && y >= 0 && y < height;
+        }
+
+
+    }
+    
     public static class Pathfinding
     {
         public static bool PathExists(GameField gameField, int startX, int startY, int targetX, int targetY)

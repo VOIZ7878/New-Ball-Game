@@ -52,7 +52,11 @@ namespace BallGame
                         switch (choice)
                         {
                             case MenuChoice.StartGame:
-                                gameField = StartNewGame();
+                                gameManager = new GameManager(
+                                    new GameField(10, 10, inputManager, soundManager, initialize: false),
+                                    renderer, resultManager, soundManager, inputManager, menuManager
+                                );
+                                gameField = gameManager.StartNewGame(10, 10);
                                 currentState = GameState.Running;
                                 break;
 
@@ -68,7 +72,11 @@ namespace BallGame
                                 break;
 
                             case MenuChoice.TestLevel:
-                                gameField = LoadLevel("level1.txt");
+                                gameManager = new GameManager(
+                                    new GameField(10, 10, inputManager, soundManager, initialize: false),
+                                    renderer, resultManager, soundManager, inputManager, menuManager
+                                );
+                                gameField = gameManager.LoadLevel("level1.txt", 10, 10);
                                 currentState = GameState.Running;
                                 break;
 
@@ -76,6 +84,9 @@ namespace BallGame
                                 gameField = gameStateManager.LoadGameState();
                                 if (gameField != null)
                                 {
+                                    gameManager = new GameManager(
+                                        gameField, renderer, resultManager, soundManager, inputManager, menuManager
+                                    );
                                     currentState = GameState.Running;
                                 }
                                 else
@@ -102,22 +113,6 @@ namespace BallGame
                         break;
                 }
             }
-        }
-
-        private GameField StartNewGame()
-        {
-            var manager = new GameManager(new GameField(10, 10, renderer, inputManager, soundManager), renderer, resultManager, soundManager, inputManager, menuManager);
-            gameField = manager.StartNewGame(10, 10);
-            gameManager = new GameManager(gameField, renderer, resultManager, soundManager, inputManager, menuManager);
-            return gameField;
-        }
-
-        private GameField LoadLevel(string fileName)
-        {
-            var manager = new GameManager(new GameField(10, 10, renderer, inputManager, soundManager), renderer, resultManager, soundManager, inputManager, menuManager);
-            gameField = manager.LoadLevel(fileName, 10, 10);
-            gameManager = new GameManager(gameField, renderer, resultManager, soundManager, inputManager, menuManager);
-            return gameField;
         }
 
         private async Task RunGameLoop(GameField field)

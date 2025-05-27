@@ -29,6 +29,9 @@ namespace BallGame
 
             if (field.IsShield(newX, newY, out char shieldDir))
             {
+                int oldDx = Dx;
+                int oldDy = Dy;
+
                 if (shieldDir == '/')
                 {
                     int temp = Dx;
@@ -42,14 +45,25 @@ namespace BallGame
                     Dy = temp;
                 }
 
-                X = newX + Dx;
-                Y = newY + Dy;
-                
+                int reflectedX = newX + Dx;
+                int reflectedY = newY + Dy;
+
+                if (field.IsWall(reflectedX, reflectedY))
+                {
+                    Dx = -oldDx;
+                    Dy = -oldDy;
+                    X = X + Dx;
+                    Y = Y + Dy;
+                    return;
+                }
+
+                X = reflectedX;
+                Y = reflectedY;
+
                 if (field.IsEnergyBall(X, Y))
                 {
                     field.CollectEnergyBall(X, Y);
                 }
-
                 return;
             }
 
@@ -63,4 +77,4 @@ namespace BallGame
         }
 
     }
-} 
+}

@@ -9,15 +9,11 @@ namespace BallGame
         private readonly GameField gameField;
         private readonly Random rnd = new Random();
         private readonly IRenderer renderer;
-        private readonly IInputManager inputManager;
-        private readonly ISoundManager soundManager;
 
         public LevelBuilder(GameField gameField)
         {
             this.gameField = gameField;
             renderer = new ConsoleRenderer();
-            inputManager = new ConsoleInputManager();
-            soundManager = new SoundManager();
         }
 
         public void InitializeField()

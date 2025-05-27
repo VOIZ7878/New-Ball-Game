@@ -38,7 +38,7 @@ namespace BallGame.Utils
             var data = JsonSerializer.Deserialize<SerializedGameField>(json);
             if (data == null) throw new Exception("Failed to deserialize game field.");
 
-            var gameField = new GameField(data.Width, data.Height, renderer, inputManager, soundManager, initialize: false)
+            var gameField = new GameField(data.Width, data.Height, inputManager, soundManager, initialize: false)
             {
                 TotalScore = data.TotalScore,
                 EnergyBallCount = data.EnergyBallCount

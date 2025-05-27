@@ -23,7 +23,7 @@ namespace BallGame
 
         public GameManager(GameField field, IRenderer renderer, ResultManager resultSaver, ISoundManager soundManager, IInputManager inputManager, IMenuManager menuManager)
         {
-            gameField = field;
+            this.gameField = field;
             this.resultSaver = resultSaver;
             this.renderer = renderer;
             this.soundManager = soundManager;
@@ -143,7 +143,7 @@ namespace BallGame
 
         private GameField CreateEmptyGameField(int width, int height)
         {
-            return new GameField(width, height, renderer, inputManager, soundManager, initialize: false);
+            return new GameField(width, height, inputManager, soundManager, initialize: false);
         }
     }
 }
