@@ -10,23 +10,12 @@ namespace BallGame
         private readonly GameElement?[,] grid;
         public int Width => width;
         public int Height => height;
-        private readonly ISoundManager soundManager;
-        public IInputManager InputManager { get; }
 
-        public GameField(int w, int h, IInputManager inputManager, ISoundManager soundManager, bool initialize = true)
+        public GameField(int w, int h)
         {
             width = w;
             height = h;
             grid = new GameElement?[w, h];
-
-            this.InputManager = inputManager;
-            this.soundManager = soundManager;
-
-            if (initialize)
-            {
-                var initializer = new LevelBuilder(this);
-                initializer.InitializeField();
-            }
 
             Player = new Player(1, 1);
         }
@@ -36,6 +25,7 @@ namespace BallGame
             get => grid[x, y];
             set => grid[x, y] = value;
         }
+
         public GameElement?[,] Grid => grid;
 
         public void Update(bool playerMoved)

@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using BallGame.Rendering;
 using BallGame.Utils;
 using BallGame.Input;

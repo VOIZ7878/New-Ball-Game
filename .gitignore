@@ -3,6 +3,8 @@ bin/
 obj/
 publish/
 TestResults/
+.git/
+.vs/
 
 # User-specific files
 *.user
@@ -27,3 +29,5 @@ Thumbs.db
 *.snupkg
 packages/
 NewBallGame/GameState.json
+NewBallGame/GameResults.txt
+.gitignore

@@ -6,15 +6,6 @@ using BallGame.Utils;
 
 namespace BallGame
 {
-    public enum GameState
-    {
-        MainMenu,
-        Running,
-        Paused,
-        GameOver,
-        Exit
-    }
-
     public class GameRunner
     {
         private GameField? gameField;
@@ -52,16 +43,14 @@ namespace BallGame
                         switch (choice)
                         {
                             case MenuChoice.StartGame:
-                                gameManager = new GameManager(
-                                    new GameField(10, 10, inputManager, soundManager, initialize: false),
-                                    renderer, resultManager, soundManager, inputManager, menuManager
-                                );
-                                gameField = gameManager.StartNewGame(10, 10);
+                                var levelBuilder = new LevelBuilder();
+                                gameManager = new GameManager(resultManager, renderer, levelBuilder);
+                                gameField = gameManager.StartNewGame(true);
                                 currentState = GameState.Running;
                                 break;
 
                             case MenuChoice.ShowResults:
-                                resultManager.ShowSavedResults();
+                                resultManager.ShowResults();
                                 break;
 
                             case MenuChoice.Settings:
@@ -72,11 +61,11 @@ namespace BallGame
                                 break;
 
                             case MenuChoice.TestLevel:
+                                gameField = new GameField(10, 10);
+                                var testLevelBuilder = new LevelBuilder();
                                 gameManager = new GameManager(
-                                    new GameField(10, 10, inputManager, soundManager, initialize: false),
-                                    renderer, resultManager, soundManager, inputManager, menuManager
-                                );
-                                gameField = gameManager.LoadLevel("level1.txt", 10, 10);
+                                    resultManager, renderer, testLevelBuilder);
+                                gameField = gameManager.LoadLevel("level1.txt");
                                 currentState = GameState.Running;
                                 break;
 
@@ -84,9 +73,9 @@ namespace BallGame
                                 gameField = gameStateManager.LoadGameState();
                                 if (gameField != null)
                                 {
-                                    gameManager = new GameManager(
-                                        gameField, renderer, resultManager, soundManager, inputManager, menuManager
-                                    );
+                                    var loadedLevelBuilder = new LevelBuilder();
+                                    gameManager = new GameManager(resultManager, renderer, loadedLevelBuilder);
+                                    gameManager.SetGameField(gameField);
                                     currentState = GameState.Running;
                                 }
                                 else
@@ -160,11 +149,20 @@ namespace BallGame
 
                     if (await gameManager.CheckLevelCompletionAsync())
                     {
-                        gameManager.RestartLevel(false);
+                        gameField = gameManager.StartNewGame(false);
+                        field = gameField;
+                        controls = new ControlsManager(field, gameManager!, gameStateManager, inputManager, renderer);
                         renderer.PreRender(field);
-
                         continue;
                     }
+                }
+                if (nextState == GameState.Restart)
+                {
+                    gameField = gameManager!.StartNewGame(true);
+                    field = gameField;
+                    controls = new ControlsManager(field, gameManager!, gameStateManager, inputManager, renderer);
+                    renderer.PreRender(field);
+                    continue;
                 }
 
                 await Task.Delay(40);

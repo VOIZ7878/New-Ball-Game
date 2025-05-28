@@ -50,7 +50,7 @@ namespace BallGame
             }
         }
 
-        public void ShowSavedResults()
+        public void ShowResults()
         {
             renderer.Clear();
             if (File.Exists(ResultsFilePath))

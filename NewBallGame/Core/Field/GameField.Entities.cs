@@ -27,10 +27,10 @@ namespace BallGame
         public bool IsEnemy(int x, int y) => Enemy.IsEnemy(Enemies, x, y);
         public bool IsShield(int x, int y, out char dir) => Shield.IsShield(grid[x, y], out dir);
         public bool IsEnergyBall(int x, int y) => EnergyBall.IsEnergyBall(grid[x, y]);
-        public bool IsWall(int x, int y) => x < 0 || x >= width || y < 0 || y >= height || Wall.IsWall(grid[x, y]);
+        public bool IsWall(int x, int y) => x < 0 || x >= Width || y < 0 || y >= Height || Wall.IsWall(grid[x, y]);
 
-        public void CollectEnergyBall(int x, int y) => EnergyBall.Collect(grid, x, y, ref energyBallCount, Player, soundManager);
-        public bool PlaceShield(int x, int y, char direction) => Shield.PlaceShield(grid, x, y, direction, soundManager);
+        public void CollectEnergyBall(int x, int y) => EnergyBall.Collect(grid, x, y, ref energyBallCount, Player, new SoundManager());
+        public bool PlaceShield(int x, int y, char direction) => Shield.PlaceShield(grid, x, y, direction, new SoundManager());
 
     }
 }

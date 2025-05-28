@@ -6,38 +6,47 @@ namespace BallGame
 {
     public class LevelBuilder
     {
-        private readonly GameField gameField;
         private readonly Random rnd = new Random();
-        private readonly IRenderer renderer;
 
-        public LevelBuilder(GameField gameField)
+        public LevelBuilder() { }
+
+        public GameField CreateGameField(bool randomSize = true)
         {
-            this.gameField = gameField;
-            renderer = new ConsoleRenderer();
+            int width = 10;
+            int height = 10;
+
+            if (randomSize)
+            {
+                Random rnd = new Random();
+                width += rnd.Next(5);
+                height += rnd.Next(5);
+            }
+
+            return new GameField(width, height);
         }
 
-        public void InitializeField()
+        public void InitializeField(GameField gameField)
         {
             const int maxAttempts = 10;
             int attempt = 0;
 
             while (attempt++ < maxAttempts)
             {
-                InitializeGrid();
-                PlaceWalls();
-                PlaceBall();
-                PlacePlayer();
-                PlaceEnergyBalls();
-                PlaceEnemies();
+                InitializeGrid(gameField);
+                PlaceWalls(gameField);
+                PlaceBall(gameField);
+                PlacePlayer(gameField);
+                PlaceEnergyBalls(gameField);
+                PlaceEnemies(gameField);
 
-                if (IsLevelPassable())
+                if (IsLevelPassable(gameField))
                     return;
             }
 
             throw new Exception("Failed to generate a passable level.");
         }
 
-        private void InitializeGrid()
+        private void InitializeGrid(GameField gameField)
         {
             for (int x = 0; x < gameField.Width; x++)
                 for (int y = 0; y < gameField.Height; y++)
@@ -47,7 +56,7 @@ namespace BallGame
             gameField.EnergyBallList.Clear();
         }
 
-        private void PlaceWalls()
+        private void PlaceWalls(GameField gameField)
         {
             for (int x = 0; x < gameField.Width; x++)
             {
@@ -75,12 +84,12 @@ namespace BallGame
             }
         }
 
-        private void PlaceBall()
+        private void PlaceBall(GameField gameField)
         {
             gameField.Ball = new Ball(gameField.Width / 2, gameField.Height / 2);
         }
 
-        private void PlacePlayer()
+        private void PlacePlayer(GameField gameField)
         {
             int x, y;
             do
@@ -92,7 +101,7 @@ namespace BallGame
             gameField.Player = new Player(x, y);
         }
 
-        private void PlaceEnergyBalls()
+        private void PlaceEnergyBalls(GameField gameField)
         {
             if (gameField.Ball == null) return;
 
@@ -120,7 +129,7 @@ namespace BallGame
             gameField.EnergyBallCount = energyBallCount;
         }
 
-        private void PlaceEnemies()
+        private void PlaceEnemies(GameField gameField)
         {
             int enemiesCount = rnd.Next(1, 4);
 
@@ -143,7 +152,7 @@ namespace BallGame
             }
         }
 
-        private bool IsLevelPassable()
+        private bool IsLevelPassable(GameField gameField)
         {
             if (gameField.Ball == null || gameField.Player == null || gameField.EnergyBallList == null || gameField.EnergyBallList.Count == 0)
                 return false;

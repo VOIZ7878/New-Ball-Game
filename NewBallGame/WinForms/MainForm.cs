@@ -17,7 +17,6 @@ namespace BallGame
         private WinFormsMenuManager menuManager;
         private IRenderer renderer;
         private ISoundManager soundManager;
-
         private TableLayoutPanel? mainLayout;
         private FlowLayoutPanel? buttonPanel;
 
@@ -68,7 +67,8 @@ namespace BallGame
             {
                 Dock = DockStyle.Fill,
                 BackColor = Color.Black,
-                Margin = new Padding(10)
+                Margin = new Padding(10),
+                BorderStyle = BorderStyle.FixedSingle // Add a border for visual distinction
             };
             mainLayout.Controls.Add(panel1, 0, 0);
             mainLayout.SetRowSpan(panel1, 1);

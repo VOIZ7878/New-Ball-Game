@@ -1,21 +1,9 @@
-using System;
-using System.Threading.Tasks;
 using BallGame.Rendering;
 using BallGame.Input;
 
 namespace BallGame
 {
-    public enum MenuChoice
-    {
-        StartGame,
-        LoadGame,
-        ShowResults,
-        Settings,
-        Exit,
-        TestLevel
-    }
-
-    public class ConsoleMenuManager : IMenuManager
+        public class ConsoleMenuManager : IMenuManager
     {
         private readonly IRenderer renderer;
         private readonly IInputManager inputManager;

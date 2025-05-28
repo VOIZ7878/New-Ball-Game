@@ -8,16 +8,14 @@ namespace BallGame
     {
         public bool IsMoveable(int x, int y)
         {
-            if (x < 0 || x >= width || y < 0 || y >= height) return false;
+            if (x < 0 || x >= Width || y < 0 || y >= Height) return false;
             return grid[x, y]?.IsMoveable() ?? true;
         }
 
         public bool IsInside(int x, int y)
         {
-            return x >= 0 && x < width && y >= 0 && y < height;
+            return x >= 0 && x < Width && y >= 0 && y < Height;
         }
-
-
     }
     
     public static class Pathfinding

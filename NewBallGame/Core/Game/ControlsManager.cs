@@ -41,8 +41,7 @@ namespace BallGame
                         gameStateManager.SaveGameState(gameField);
                         return (GameState.MainMenu, false);
                     case KeyMap.InGameAction.Restart:
-                        gameManager.RestartLevel(true);
-                        return (GameState.Running, false);
+                        return (GameState.Restart, false);
                     case KeyMap.InGameAction.ShowResults:
                         gameManager.ShowGameResults();
                         return (GameState.Running, false);
