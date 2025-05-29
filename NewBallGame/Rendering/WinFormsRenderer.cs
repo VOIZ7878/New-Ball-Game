@@ -9,11 +9,13 @@ namespace BallGame
     {
         private readonly Panel panel;
         private readonly RichTextBox consoleBox;
+        private readonly Label? scoreLabel;
 
-        public WinFormsRenderer(DoubleBufferedPanel panel, RichTextBox consoleBox)
+        public WinFormsRenderer(DoubleBufferedPanel panel, RichTextBox consoleBox, Label? scoreLabel = null)
         {
             this.panel = panel;
             this.consoleBox = consoleBox;
+            this.scoreLabel = scoreLabel;
             this.panel.Paint += OnPaint;
         }
 
@@ -34,19 +36,19 @@ namespace BallGame
                     if (element is Wall)
                     {
                         var visual = BallGame.Rendering.ElementVisuals.Get(element);
-                        g.DrawString(visual.Symbol, font, visual.WinFormsBrush, x * cellSize, y * cellSize);
+                        g.DrawString(visual.Symbol, font, visual.Brush, x * cellSize, y * cellSize);
                     }
                 }
             }
 
             var player = FieldToRender.Player;
             var playerVisual = BallGame.Rendering.ElementVisuals.Get(player);
-            g.DrawString(playerVisual.Symbol, font, playerVisual.WinFormsBrush, player.X * cellSize, player.Y * cellSize);
+            g.DrawString(playerVisual.Symbol, font, playerVisual.Brush, player.X * cellSize, player.Y * cellSize);
 
             if (FieldToRender.Ball is { X: var bx, Y: var by })
             {
                 var ballVisual = BallGame.Rendering.ElementVisuals.Get(FieldToRender.Ball);
-                g.DrawString(ballVisual.Symbol, font, ballVisual.WinFormsBrush, bx * cellSize, by * cellSize);
+                g.DrawString(ballVisual.Symbol, font, ballVisual.Brush, bx * cellSize, by * cellSize);
             }
 
             for (int y = 0; y < FieldToRender.Height; y++)
@@ -57,7 +59,7 @@ namespace BallGame
                     if (element != null && !(element is Wall) && element != player && element != FieldToRender.Ball)
                     {
                         var visual = BallGame.Rendering.ElementVisuals.Get(element);
-                        g.DrawString(visual.Symbol, font, visual.WinFormsBrush, x * cellSize, y * cellSize);
+                        g.DrawString(visual.Symbol, font, visual.Brush, x * cellSize, y * cellSize);
                     }
                 }
             }
@@ -69,7 +71,7 @@ namespace BallGame
                 var x = hintPos.Value.x;
                 var y = hintPos.Value.y;
                 var hintVisual = BallGame.Rendering.ElementVisuals.Get(FieldToRender.Hint);
-                g.DrawString(hintDir.Value.ToString(), font, hintVisual.WinFormsBrush, x * cellSize, y * cellSize);
+                g.DrawString(hintDir.Value.ToString(), font, hintVisual.Brush, x * cellSize, y * cellSize);
             }
         }
         public void Clear()
@@ -93,14 +95,27 @@ namespace BallGame
             Thread.Sleep(milliseconds);
         }
         
+        private void UpdateScoreLabel(GameField field)
+        {
+            if (scoreLabel != null)
+            {
+                if (scoreLabel.InvokeRequired)
+                    scoreLabel.Invoke(() => scoreLabel.Text = $"Score: {field.Player.Score}");
+                else
+                    scoreLabel.Text = $"Score: {field.Player.Score}";
+            }
+        }
+
         public void PreRender(GameField field)
         {
             Clear();
+            UpdateScoreLabel(field);
         }
 
         public void PostRender(GameField field)
         {
             FieldToRender = field;
+            UpdateScoreLabel(field);
             if (panel.InvokeRequired)
                 panel.Invoke(() => panel.Invalidate());
             else

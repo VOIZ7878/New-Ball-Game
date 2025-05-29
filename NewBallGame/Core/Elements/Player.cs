@@ -12,13 +12,16 @@ namespace BallGame
         {
             X = x;
             Y = y;
+            Score = 100;
         }
 
         public bool Move(GameField field, ConsoleKey key)
         {
             if (BallGame.Input.KeyMap.ShieldKeys.TryGetValue(key, out char shieldChar))
             {
-                if (field.PlaceShield(X, Y, shieldChar)) Score -= 1;
+                if (field.PlaceShield(X, Y, shieldChar)) {
+                    Score -= 10;
+                }
                 return false;
             }
 
@@ -45,7 +48,7 @@ namespace BallGame
 
         public void ResetScore()
         {
-            Score = 0;
+            Score = 100;
         }
     }
 }

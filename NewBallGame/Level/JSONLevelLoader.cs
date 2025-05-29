@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using BallGame.Rendering;
 using BallGame.Input;
@@ -14,15 +17,14 @@ namespace BallGame.Utils
                 Height = field.Height,
                 Grid = Enumerable.Range(0, field.Height)
                     .Select(y => new string(Enumerable.Range(0, field.Width)
-                        .Select(x => field.Grid[x, y] switch
+                        .Select(x =>
                         {
-                            Wall => '#',
-                            Player _ => 'P',
-                            Ball _ => 'B',
-                            EnergyBall _ => 'E',
-                            Enemy => 'X',
-                            Shield s when Shield.IsShield(s, out var dir) => dir,
-                            _ => '.'
+                            var element = field.Grid[x, y];
+                            if (element is Shield s && Shield.IsShield(s, out var dir))
+                                return dir;
+                            if (element != null && BallGame.Rendering.ElementRegistry.TypeToInfo.TryGetValue(element.GetType(), out var info))
+                                return info.Symbol;
+                            return '.';
                         }).ToArray()))
                     .ToList(),
                 Player = new { field.Player.X, field.Player.Y, field.Player.Score },
@@ -49,31 +51,39 @@ namespace BallGame.Utils
                 for (int x = 0; x < data.Grid[y].Length; x++)
                 {
                     char symbol = data.Grid[y][x];
-                    switch (symbol)
+                    if (symbol == '/' || symbol == '\\')
                     {
-                        case '#':
-                            gameField[x, y] = new Wall();
-                            break;
-                        case 'P':
-                            gameField.Player = new Player(x, y);
-                            break;
-                        case 'B':
-                            gameField.Ball = new Ball(x, y);
-                            break;
-                        case 'E':
-                            var energyBall = new EnergyBall();
-                            gameField[x, y] = energyBall;
-                            gameField.EnergyBallList.Add((energyBall, x, y));
-                            break;
-                        case 'X':
-                            var enemy = new Enemy(x, y);
-                            gameField[x, y] = enemy;
-                            gameField.Enemies.Add(enemy);
-                            break;
-                        case '/':
-                        case '\\':
-                            gameField[x, y] = new Shield(symbol);
-                            break;
+                        gameField[x, y] = new Shield(symbol);
+                        continue;
+                    }
+                    if (BallGame.Rendering.ElementRegistry.SymbolToInfo.TryGetValue(symbol, out var info))
+                    {
+                        var element = info.Factory(x, y);
+                        switch (element)
+                        {
+                            case Player player:
+                                gameField.Player = player;
+                                break;
+                            case Ball ball:
+                                gameField.Ball = ball;
+                                break;
+                            case EnergyBall energyBall:
+                                gameField[x, y] = energyBall;
+                                gameField.EnergyBallList.Add((energyBall, x, y));
+                                break;
+                            case Enemy enemy:
+                                gameField[x, y] = enemy;
+                                gameField.Enemies.Add(enemy);
+                                break;
+                            default:
+                                gameField[x, y] = element;
+                                break;
+                        }
+                        continue;
+                    }
+                    if (symbol == '.')
+                    {
+                        continue;
                     }
                 }
             }
@@ -82,10 +92,9 @@ namespace BallGame.Utils
             {
                 gameField.Player = new Player(data.Player.X, data.Player.Y)
                 {
-                    Score = data.Player.Score 
+                    Score = data.Player.Score
                 };
             }
-
             if (data.Ball != null)
             {
                 gameField.Ball = new Ball(data.Ball.X, data.Ball.Y)
@@ -94,7 +103,6 @@ namespace BallGame.Utils
                     Dy = data.Ball.Dy
                 };
             }
-
             return gameField;
         }
 

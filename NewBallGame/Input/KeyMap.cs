@@ -38,7 +38,6 @@ namespace BallGame.Input
             { Keys.P, ConsoleKey.Enter },
             { Keys.R, ConsoleKey.R },
             { Keys.Escape, ConsoleKey.Escape },
-            { Keys.V, ConsoleKey.V },
             { Keys.H, ConsoleKey.H }
         };
 

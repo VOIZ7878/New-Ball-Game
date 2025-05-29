@@ -42,9 +42,6 @@ namespace BallGame
                         return (GameState.MainMenu, false);
                     case KeyMap.InGameAction.Restart:
                         return (GameState.Restart, false);
-                    case KeyMap.InGameAction.ShowResults:
-                        gameManager.ShowGameResults();
-                        return (GameState.Running, false);
                     case KeyMap.InGameAction.Hint:
                         gameField.Hint.CalculateHint(gameField);
                         return (GameState.Running, false);

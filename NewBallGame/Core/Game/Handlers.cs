@@ -1,4 +1,3 @@
-
 namespace BallGame
 {
     public partial class GameManager
@@ -8,23 +7,14 @@ namespace BallGame
         private const string GameOverNoBallsMessage = "Game Over! No reachable energy balls. Total Score: {0}, Total Time Played: {1:F2} seconds";
         private const string LevelWinMessage = "You win! Level Score: {0}, Total Score: {1}, Time: {2:F2} seconds";
 
-        public void SaveResults()
-        {
-            resultSaver.Save(gameField!.TotalScore, ElapsedTimeSeconds);
-        }
-
-        public void ShowGameResults()
-        {
-            resultSaver.ShowResults();
-        }
-
-        public void UpdateEnemies()
-        {
-            Enemy.UpdateEnemies(gameField!.Enemies, gameField.Grid, gameField);
-        }
-
         public async Task<bool> CheckGameOverConditionsAsync()
         {
+            if (gameField!.Player.Score < 0)
+            {
+                await HandleGameOverAsync(GameOverMessage);
+                return true;
+            }
+
             if (gameField!.IsEnemy(gameField.Player.X, gameField.Player.Y))
             {
                 await HandleGameOverAsync(GameOverEnemyMessage);
@@ -53,6 +43,7 @@ namespace BallGame
 
         private async Task HandleLevelCompletionAsync()
         {
+            SaveResults();
             gameField!.TotalScore += gameField.Player.Score;
             renderer.Clear();
             renderer.WriteLine(string.Format(LevelWinMessage, gameField.Player.Score, gameField.TotalScore, ElapsedTimeSeconds));
@@ -73,7 +64,7 @@ namespace BallGame
             renderer.WriteLine(string.Format(message, totalScore, elapsedTime));
             await Task.Delay(2000);
         }
-        
+
         private bool CanWin()
         {
             if (gameField!.EnergyBallCount == 0) return true;
@@ -85,6 +76,30 @@ namespace BallGame
             }
 
             return false;
+        }
+        
+        public void SaveResults()
+        {
+            resultSaver.Save(gameField!.TotalScore, ElapsedTimeSeconds);
+        }
+
+        public void UpdateEnemies()
+        {
+            Enemy.UpdateEnemies(gameField!.Enemies, gameField.Grid, gameField);
+        }
+
+        public void SetGameField(GameField field)
+        {
+            this.gameField = field;
+        }
+
+        public void SaveResultsWithCurrentScore()
+        {
+            if (gameField != null)
+            {
+                gameField.TotalScore += gameField.Player.Score;
+                resultSaver.Save(gameField.TotalScore, ElapsedTimeSeconds);
+            }
         }
     }
 }

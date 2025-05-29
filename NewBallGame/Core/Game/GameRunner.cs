@@ -43,6 +43,10 @@ namespace BallGame
                         switch (choice)
                         {
                             case MenuChoice.StartGame:
+                                if (gameField != null && gameManager != null)
+                                {
+                                    gameManager.SaveResults();
+                                }
                                 var levelBuilder = new LevelBuilder();
                                 gameManager = new GameManager(resultManager, renderer, levelBuilder);
                                 gameField = gameManager.StartNewGame(true);
@@ -57,7 +61,10 @@ namespace BallGame
                                 break;
 
                             case MenuChoice.Exit:
-                                currentState = GameState.Exit;
+                                if (gameField != null && gameManager != null)
+                                {
+                                    gameManager.SaveResults();
+                                }
                                 break;
 
                             case MenuChoice.TestLevel:
@@ -120,13 +127,11 @@ namespace BallGame
 
                 if (nextState == GameState.Paused)
                 {
-                    gameManager!.SaveResults();
                     gameStateManager.SaveGameState(field);
                     break;
                 }
                 if (nextState == GameState.Exit)
                 {
-                    gameManager!.SaveResults();
                     gameStateManager.SaveGameState(field);
                     break;
                 }
@@ -149,7 +154,13 @@ namespace BallGame
 
                     if (await gameManager.CheckLevelCompletionAsync())
                     {
+                        int prevScore = field.TotalScore;
+                        int prevPlayerScore = field.Player.Score;
+
                         gameField = gameManager.StartNewGame(false);
+                        gameField.TotalScore = prevScore;
+                        gameField.Player.Score = prevPlayerScore;
+
                         field = gameField;
                         controls = new ControlsManager(field, gameManager!, gameStateManager, inputManager, renderer);
                         renderer.PreRender(field);
@@ -158,11 +169,18 @@ namespace BallGame
                 }
                 if (nextState == GameState.Restart)
                 {
+                    gameManager!.SaveResultsWithCurrentScore();
                     gameField = gameManager!.StartNewGame(true);
                     field = gameField;
                     controls = new ControlsManager(field, gameManager!, gameStateManager, inputManager, renderer);
                     renderer.PreRender(field);
                     continue;
+                }
+                if (nextState == GameState.GameOver)
+                {
+                    gameManager!.SaveResults();
+                    soundManager.PlaySoundEffect("lose.mp3");
+                    break;
                 }
 
                 await Task.Delay(40);

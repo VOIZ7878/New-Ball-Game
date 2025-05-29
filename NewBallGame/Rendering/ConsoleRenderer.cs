@@ -9,6 +9,9 @@ namespace BallGame.Rendering
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.SetCursorPosition(0, 0);
+            Console.Write(new string(' ', 20));
+            Console.SetCursorPosition(0, 0);
             Console.WriteLine($"Score: {field.Player.Score}");
             Console.ResetColor();
 
@@ -21,7 +24,7 @@ namespace BallGame.Rendering
                     {
                         var visual = ElementVisuals.Get(cell);
                         Console.SetCursorPosition(x, y + 1);
-                        Console.ForegroundColor = visual.ConsoleColor;
+                        Console.ForegroundColor = visual.Color;
                         Console.Write(visual.Symbol);
                         Console.ResetColor();
                     }
@@ -33,6 +36,8 @@ namespace BallGame.Rendering
         {
             Console.SetCursorPosition(0, 0);
             Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(new string(' ', 20));
+            Console.SetCursorPosition(0, 0);
             Console.WriteLine($"Score: {field.Player.Score}");
             Console.ResetColor();
 
@@ -56,25 +61,25 @@ namespace BallGame.Rendering
                     if (isPlayer)
                     {
                         var playerVisual = ElementVisuals.Get(field.Player);
-                        Console.ForegroundColor = playerVisual.ConsoleColor;
+                        Console.ForegroundColor = playerVisual.Color;
                         Console.Write(playerVisual.Symbol);
                     }
                     else if (isBall && field.Ball != null)
                     {
                         var ballVisual = ElementVisuals.Get(field.Ball);
-                        Console.ForegroundColor = ballVisual.ConsoleColor;
+                        Console.ForegroundColor = ballVisual.Color;
                         Console.Write(ballVisual.Symbol);
                     }
                     else if (isHint && hintDir.HasValue)
                     {
                         var hintVisual = ElementVisuals.Get(field.Hint);
-                        Console.ForegroundColor = hintVisual.ConsoleColor;
+                        Console.ForegroundColor = hintVisual.Color;
                         Console.Write(hintDir.Value);
                     }
                     else if (cell != null)
                     {
                         var visual = ElementVisuals.Get(cell);
-                        Console.ForegroundColor = visual.ConsoleColor;
+                        Console.ForegroundColor = visual.Color;
                         Console.Write(visual.Symbol);
                     }
                     else

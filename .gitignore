@@ -31,3 +31,5 @@ packages/
 NewBallGame/GameState.json
 NewBallGame/GameResults.txt
 .gitignore
+NewBallGame/GameResults.txt
+NewBallGame/GameState.json

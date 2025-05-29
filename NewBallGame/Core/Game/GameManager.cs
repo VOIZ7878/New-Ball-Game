@@ -46,10 +46,5 @@ namespace BallGame
             renderer.PreRender(gameField);
             return gameField;
         }
-
-        public void SetGameField(GameField field)
-        {
-            this.gameField = field;
-        }
     }
 }

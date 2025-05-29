@@ -29,42 +29,41 @@ namespace BallGame
                     char symbol = lines[y][x];
                     gameField[x, y] = null;
 
-                    switch (symbol)
+                    if (symbol == '/' || symbol == '\\')
                     {
-                        case '#':
-                            gameField[x, y] = new Wall();
-                            break;
-                        case 'P':
-                            gameField.Player = new Player(x, y);
-                            break;
-                        case 'B':
-                            gameField.Ball = new Ball(x, y);
-                            break;
-                        case 'E':
-                            var energyBall = new EnergyBall();
-                            gameField[x, y] = energyBall;
-                            gameField.EnergyBallList.Add((energyBall, x, y));
-                            break;
-                        case 'X':
-                            var enemy = new Enemy(x, y);
-                            gameField[x, y] = enemy;
-                            gameField.Enemies.Add(enemy);
-                            break;
-                        case 'S':
-                            var Senemy = new SmartEnemy(x, y);
-                            gameField[x, y] = Senemy;
-                            gameField.Enemies.Add(Senemy);
-                            break;
-                        case 'Q':
-                            var Benemy = new BossEnemy(x, y);
-                            gameField[x, y] = Benemy;
-                            gameField.Enemies.Add(Benemy);
-                            break;
-                        case '.':
-                            break;
-                        default:
-                            throw new Exception($"Unknown symbol in level file: '{symbol}'");
+                        gameField[x, y] = new Shield(symbol);
+                        continue;
                     }
+                    if (BallGame.Rendering.ElementRegistry.SymbolToInfo.TryGetValue(symbol, out var info))
+                    {
+                        var element = info.Factory(x, y);
+                        switch (element)
+                        {
+                            case Player player:
+                                gameField.Player = player;
+                                break;
+                            case Ball ball:
+                                gameField.Ball = ball;
+                                break;
+                            case EnergyBall energyBall:
+                                gameField[x, y] = energyBall;
+                                gameField.EnergyBallList.Add((energyBall, x, y));
+                                break;
+                            case Enemy enemy:
+                                gameField[x, y] = enemy;
+                                gameField.Enemies.Add(enemy);
+                                break;
+                            default:
+                                gameField[x, y] = element;
+                                break;
+                        }
+                        continue;
+                    }
+                    if (symbol == '.')
+                    {
+                        continue;
+                    }
+                    throw new Exception($"Unknown symbol in level file: '{symbol}'");
                 }
             }
 
