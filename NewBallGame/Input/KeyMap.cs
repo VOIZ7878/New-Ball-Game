@@ -21,7 +21,6 @@ namespace BallGame.Input
             { ConsoleKey.R, InGameAction.Restart },
             { ConsoleKey.V, InGameAction.ShowResults },
             { ConsoleKey.H, InGameAction.Hint },
-            { ConsoleKey.Q, InGameAction.Save }
         };
         
         public static readonly Dictionary<Keys, ConsoleKey> KeyToConsoleKey = new()

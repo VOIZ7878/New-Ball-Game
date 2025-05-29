@@ -45,12 +45,6 @@ namespace BallGame
                     case KeyMap.InGameAction.Hint:
                         gameField.Hint.CalculateHint(gameField);
                         return (GameState.Running, false);
-                    case KeyMap.InGameAction.Save:
-                        renderer.WriteLine("Saving game...");
-                        gameStateManager.SaveGameState(gameField);
-                        renderer.WriteLine("Game saved successfully!");
-                        renderer.Pause(1000);
-                        return (GameState.Running, false);
                 }
             }
 

@@ -37,7 +37,7 @@ namespace BallGame
                     string prefix = i == selected ? "> " : "  ";
                     renderer.WriteLine($"{prefix}{i + 1}. {menuItems[i].Item1}");
                 }
-                renderer.WriteLine("In-game actions: R - Restart; H - Hint; V - View Results; Q - Save Game; ESC - Exit");
+                renderer.WriteLine("In-game actions: R - Restart; H - Hint; ESC - Exit");
 
                 var key = inputManager.ReadKey(true);
                 if (key == ConsoleKey.UpArrow)

@@ -33,23 +33,23 @@ namespace BallGame
         {
             currentState = GameState.MainMenu;
 
+            soundManager.PlayBackgroundMusic("menu.mp3");
+
             while (currentState != GameState.Exit)
             {
                 switch (currentState)
                 {
                     case GameState.MainMenu:
+                        soundManager.PlayBackgroundMusic("menu.mp3");
                         MenuChoice choice = await menuManager.ShowMainMenuAsync();
 
                         switch (choice)
                         {
                             case MenuChoice.StartGame:
-                                if (gameField != null && gameManager != null)
-                                {
-                                    gameManager.SaveResults();
-                                }
                                 var levelBuilder = new LevelBuilder();
                                 gameManager = new GameManager(resultManager, renderer, levelBuilder);
                                 gameField = gameManager.StartNewGame(true);
+                                soundManager.PlayBackgroundMusic("background.mp3");
                                 currentState = GameState.Running;
                                 break;
 
@@ -65,14 +65,14 @@ namespace BallGame
                                 {
                                     gameManager.SaveResults();
                                 }
+                                soundManager.StopMusic();
                                 break;
 
                             case MenuChoice.TestLevel:
-                                gameField = new GameField(10, 10);
                                 var testLevelBuilder = new LevelBuilder();
-                                gameManager = new GameManager(
-                                    resultManager, renderer, testLevelBuilder);
+                                gameManager = new GameManager(resultManager, renderer, testLevelBuilder);
                                 gameField = gameManager.LoadLevel("level1.txt");
+                                soundManager.PlayBackgroundMusic("background.mp3");
                                 currentState = GameState.Running;
                                 break;
 
@@ -98,6 +98,7 @@ namespace BallGame
                         if (gameField != null)
                             await RunGameLoop(gameField);
 
+                        soundManager.PlayBackgroundMusic("menu.mp3");
                         currentState = GameState.MainMenu;
                         break;
 
@@ -105,6 +106,7 @@ namespace BallGame
                         break;
 
                     case GameState.GameOver:
+                        soundManager.PlayBackgroundMusic("menu.mp3");
                         currentState = GameState.MainMenu;
                         break;
                 }
