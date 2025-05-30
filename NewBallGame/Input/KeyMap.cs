@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Windows.Forms;
-
 namespace BallGame.Input
 {
     public static class KeyMap

@@ -1,7 +1,3 @@
-using BallGame.Rendering;
-using BallGame.Input;
-using BallGame.Utils;
-
 namespace BallGame
 {
     public class LevelBuilder

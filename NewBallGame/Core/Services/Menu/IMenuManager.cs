@@ -2,6 +2,6 @@ namespace BallGame
 {
     public interface IMenuManager
     {
-        Task<MenuChoice> ShowMainMenuAsync();
+        Task<MenuChoice> ShowMainMenuAsync(string lastScoreDisplay);
     }
 }

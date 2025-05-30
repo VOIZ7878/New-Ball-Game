@@ -1,4 +1,3 @@
-using BallGame.Rendering;
 using BallGame.Utils;
 
 namespace BallGame

@@ -1,6 +1,3 @@
-using System.Drawing;
-using System.Threading;
-using System.Windows.Forms;
 using BallGame.Rendering;
 
 namespace BallGame
@@ -80,6 +77,11 @@ namespace BallGame
                 panel.Invoke(() => panel.Refresh());
             else
                 panel.Refresh();
+
+            if (consoleBox.InvokeRequired)
+                consoleBox.Invoke(() => consoleBox.Clear());
+            else
+                consoleBox.Clear();
         }
 
         public void WriteLine(string message)

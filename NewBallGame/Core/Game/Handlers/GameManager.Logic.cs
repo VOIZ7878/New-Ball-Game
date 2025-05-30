@@ -2,11 +2,6 @@ namespace BallGame
 {
     public partial class GameManager
     {
-        private const string GameOverMessage = "Game Over! Final Total Score: {0}, Time: {1:F2} seconds";
-        private const string GameOverEnemyMessage = "Game Over! You have been caught by the enemy. Total Score: {0}, Total Time Played: {1:F2} seconds";
-        private const string GameOverNoBallsMessage = "Game Over! No reachable energy balls. Total Score: {0}, Total Time Played: {1:F2} seconds";
-        private const string LevelWinMessage = "You win! Level Score: {0}, Total Score: {1}, Time: {2:F2} seconds";
-
         public async Task<bool> CheckGameOverConditionsAsync()
         {
             if (gameField!.Player.Score < 0)
@@ -76,30 +71,6 @@ namespace BallGame
             }
 
             return false;
-        }
-        
-        public void SaveResults()
-        {
-            resultSaver.Save(gameField!.TotalScore, ElapsedTimeSeconds);
-        }
-
-        public void UpdateEnemies()
-        {
-            Enemy.UpdateEnemies(gameField!.Enemies, gameField.Grid, gameField);
-        }
-
-        public void SetGameField(GameField field)
-        {
-            this.gameField = field;
-        }
-
-        public void SaveResultsWithCurrentScore()
-        {
-            if (gameField != null)
-            {
-                gameField.TotalScore += gameField.Player.Score;
-                resultSaver.Save(gameField.TotalScore, ElapsedTimeSeconds);
-            }
         }
     }
 }

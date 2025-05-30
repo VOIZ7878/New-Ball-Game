@@ -1,23 +1,18 @@
-using System;
-using System.IO;
 using BallGame.Rendering;
 using BallGame.Input;
-using BallGame.Utils;
 
 namespace BallGame
 {
     public class ControlsManager
     {
         private readonly GameField gameField;
-        private readonly GameManager gameManager;
         private readonly StateManager gameStateManager;
         private readonly IInputManager inputManager;
         private readonly IRenderer renderer;
 
-        public ControlsManager(GameField field, GameManager manager, StateManager gameStateManager, IInputManager inputManager, IRenderer renderer)
+        public ControlsManager(GameField field, StateManager gameStateManager, IInputManager inputManager, IRenderer renderer)
         {
-            this.gameField = field;
-            this.gameManager = manager;
+            gameField = field;
             this.gameStateManager = gameStateManager;
             this.inputManager = inputManager;
             this.renderer = renderer;
@@ -36,8 +31,7 @@ namespace BallGame
                 {
                     case KeyMap.InGameAction.ExitToMenu:
                         renderer.Clear();
-                        renderer.WriteLine($"Exiting game... Final Total Score: {gameField.TotalScore}");
-                        renderer.Pause(1000);
+                        renderer.Pause(50);
                         gameStateManager.SaveGameState(gameField);
                         return (GameState.MainMenu, false);
                     case KeyMap.InGameAction.Restart:

@@ -1,6 +1,3 @@
-using System.Windows.Forms;
-using BallGame.Input;
-
 namespace BallGame.Input
 {
     public class WinFormsInputManager : IInputManager

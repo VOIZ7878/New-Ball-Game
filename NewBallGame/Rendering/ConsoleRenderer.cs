@@ -1,6 +1,3 @@
-using System;
-using BallGame;
-
 namespace BallGame.Rendering
 {
     public class ConsoleRenderer : IRenderer

@@ -7,6 +7,6 @@ namespace BallGame
         ShowResults,
         Settings,
         Exit,
-        TestLevel
+        ManualLevel
     }
 } 

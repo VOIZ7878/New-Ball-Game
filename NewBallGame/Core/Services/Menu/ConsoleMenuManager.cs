@@ -3,7 +3,7 @@ using BallGame.Input;
 
 namespace BallGame
 {
-        public class ConsoleMenuManager : IMenuManager
+    public class ConsoleMenuManager : IMenuManager
     {
         private readonly IRenderer renderer;
         private readonly IInputManager inputManager;
@@ -14,7 +14,7 @@ namespace BallGame
             this.inputManager = inputManager;
         }
 
-        public async Task<MenuChoice> ShowMainMenuAsync()
+        public async Task<MenuChoice> ShowMainMenuAsync(string lastScoreDisplay)
         {
             await Task.Yield();
             var menuItems = new[]
@@ -24,20 +24,22 @@ namespace BallGame
                 ("Show Results", MenuChoice.ShowResults),
                 ("Settings", MenuChoice.Settings),
                 ("Exit", MenuChoice.Exit),
-                ("Test Level", MenuChoice.TestLevel)
+                ("ManualLevel", MenuChoice.ManualLevel)
             };
             int selected = 0;
 
             while (true)
             {
                 renderer.Clear();
-                renderer.WriteLine("=== BALL GAME ===");
+                renderer.WriteLine($"=== BALL GAME ===");
                 for (int i = 0; i < menuItems.Length; i++)
                 {
                     string prefix = i == selected ? "> " : "  ";
                     renderer.WriteLine($"{prefix}{i + 1}. {menuItems[i].Item1}");
                 }
                 renderer.WriteLine("In-game actions: R - Restart; H - Hint; ESC - Exit");
+                renderer.WriteLine("\nLast Score:");
+                renderer.WriteLine(lastScoreDisplay);
 
                 var key = inputManager.ReadKey(true);
                 if (key == ConsoleKey.UpArrow)

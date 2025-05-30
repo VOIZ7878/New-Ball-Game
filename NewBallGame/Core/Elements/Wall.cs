@@ -1,5 +1,3 @@
-using BallGame.Rendering;
-
 namespace BallGame
 {
     public class Wall : GameElement

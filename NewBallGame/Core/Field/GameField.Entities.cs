@@ -1,7 +1,4 @@
-using BallGame.Rendering;
 using BallGame.Utils;
-using BallGame.Input;
-using Microsoft.VisualBasic;
 
 namespace BallGame
 {
@@ -23,7 +20,6 @@ namespace BallGame
             set => energyBallCount = value;
         }
 
-        // Entity-related methods
         public bool IsEnemy(int x, int y) => Enemy.IsEnemy(Enemies, x, y);
         public bool IsShield(int x, int y, out char dir) => Shield.IsShield(grid[x, y], out dir);
         public bool IsEnergyBall(int x, int y) => EnergyBall.IsEnergyBall(grid[x, y]);

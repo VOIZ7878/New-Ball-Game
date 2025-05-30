@@ -1,6 +1,4 @@
-using System.Windows.Forms;
-
-namespace BallGame.Rendering
+namespace BallGame
 {
     public class DoubleBufferedPanel : Panel
     {

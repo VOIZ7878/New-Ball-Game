@@ -1,8 +1,4 @@
-using System;
-using System.IO;
-using System.Linq;
 using BallGame.Rendering;
-using BallGame.Utils;
 using BallGame.Input;
 
 namespace BallGame
@@ -65,6 +61,38 @@ namespace BallGame
                 renderer.WriteLine("No results found.");
             }
             inputManager.ReadKey(true);
+        }
+
+        public (int, double, DateTime) LoadLastScore()
+        {
+            try
+            {
+                const string LastScoreFile = "LastScore.txt";
+                if (File.Exists(LastScoreFile))
+                {
+                    var line = File.ReadAllText(LastScoreFile);
+                    var parts = line.Split('|');
+                    if (parts.Length == 3)
+                    {
+                        int score = int.Parse(parts[0]);
+                        double time = double.Parse(parts[1]);
+                        DateTime date = DateTime.Parse(parts[2]);
+                        return (score, time, date);
+                    }
+                }
+            }
+            catch { }
+            return (0, 0, DateTime.MinValue);
+        }
+
+        public void SaveLastScore(int score, double timePlayed, DateTime date)
+        {
+            try
+            {
+                const string LastScoreFile = "LastScore.txt";
+                File.WriteAllText(LastScoreFile, $"{score}|{timePlayed}|{date:O}");
+            }
+            catch { }
         }
     }
 }

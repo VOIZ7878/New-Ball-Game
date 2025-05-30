@@ -1,7 +1,3 @@
-using System;
-using System.Drawing;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using BallGame.Rendering;
 using BallGame.Input;
 using BallGame.Utils;
@@ -17,9 +13,9 @@ namespace BallGame
         private WinFormsMenuManager menuManager;
         private IRenderer renderer;
         private ISoundManager soundManager;
-        private TableLayoutPanel? mainLayout;
-        private FlowLayoutPanel? buttonPanel;
         private Label? scoreLabel;
+        private Panel? menuPanel;
+        private Panel? gamePanel;
 
         public MainForm(ISoundManager soundManager)
         {
@@ -44,110 +40,25 @@ namespace BallGame
 
         private async void MainForm_Load(object? sender, EventArgs e)
         {
+            ShowMenuPanel();
             runner = new GameRunner(renderer, inputManager, soundManager, menuManager);
             await runner.Run();
         }
 
-        private void InitializeUI()
+        public void ShowMenuPanel()
         {
-            this.Text = "Ball Game";
-            this.MinimumSize = new Size(800, 700);
-
-            mainLayout = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnCount = 2,
-                RowCount = 3,
-            };
-            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
-            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F)); // Score label row
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 90F));
-            mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
-
-            scoreLabel = new Label
-            {
-                Text = "Score: 0",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Font = new Font("Consolas", 16, FontStyle.Bold),
-                ForeColor = Color.Gold,
-                BackColor = Color.Black,
-                Padding = new Padding(10, 0, 0, 0)
-            };
-            mainLayout.Controls.Add(scoreLabel, 0, 0);
-            mainLayout.SetColumnSpan(scoreLabel, 2);
-
-            panel1 = new DoubleBufferedPanel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.Black,
-                Margin = new Padding(10),
-                BorderStyle = BorderStyle.FixedSingle
-            };
-            mainLayout.Controls.Add(panel1, 0, 1);
-            mainLayout.SetRowSpan(panel1, 1);
-
-            consoleBox = new RichTextBox
-            {
-                Dock = DockStyle.Fill,
-                ReadOnly = true,
-                BackColor = Color.Black,
-                ForeColor = Color.Lime,
-                Font = new Font("Consolas", 10),
-                Margin = new Padding(10)
-            };
-            mainLayout.Controls.Add(consoleBox, 1, 1);
-
-            buttonPanel = new FlowLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                FlowDirection = FlowDirection.LeftToRight,
-                AutoSize = true,
-                WrapContents = false,
-                Padding = new Padding(10, 0, 0, 0)
-            };
-            mainLayout.Controls.Add(buttonPanel, 0, 2);
-            mainLayout.SetColumnSpan(buttonPanel, 2);
-
-            this.Controls.Add(mainLayout);
-
-            AddMenuButtons();
+            if (menuPanel != null) menuPanel.Visible = true;
+            if (gamePanel != null) gamePanel.Visible = false;
+            menuPanel?.BringToFront();
         }
 
-        private void AddMenuButtons()
+        public void ShowGamePanel()
         {
-            var menuItems = new (string Text, MenuChoice Choice)[]
-            {
-                ("1. New Game", MenuChoice.StartGame),
-                ("2. Continue", MenuChoice.LoadGame),
-                ("3. Show Results", MenuChoice.ShowResults),
-                ("4. Settings", MenuChoice.Settings),
-                ("5. Exit", MenuChoice.Exit),
-                ("6. Test Level", MenuChoice.TestLevel)
-            };
-
-            foreach (var item in menuItems)
-            {
-                var btn = new Button
-                {
-                    Text = item.Text,
-                    Size = new Size(120, 30),
-                    Tag = item.Choice,
-                    Margin = new Padding(5, 10, 5, 10)
-                };
-
-                btn.Click += (s, e) =>
-                {
-                    if (btn.Tag is MenuChoice choice)
-                    {
-                        menuManager.SelectOption(choice);
-                    }
-                };
-
-                if (buttonPanel != null)
-                    buttonPanel.Controls.Add(btn);
-            }
+            if (menuPanel != null) menuPanel.Visible = false;
+            if (gamePanel != null) gamePanel.Visible = true;
+            gamePanel?.BringToFront();
         }
+
+        
     }
 }

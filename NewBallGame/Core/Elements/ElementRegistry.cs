@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-
 namespace BallGame.Rendering
 {
     public class ElementInfo
@@ -34,7 +30,6 @@ namespace BallGame.Rendering
             { typeof(SmartEnemy), new ElementInfo('S', (x, y) => new SmartEnemy(x, y), "S", ConsoleColor.Red, Brushes.White) },
             { typeof(BossEnemy), new ElementInfo('B', (x, y) => new BossEnemy(x, y), "B", ConsoleColor.Red, Brushes.White) },
             { typeof(Hint), new ElementInfo('*', (x, y) => new Hint(), "*", ConsoleColor.Yellow, Brushes.Yellow) },
-            { typeof(ScoreDisplay), new ElementInfo('S', (x, y) => new ScoreDisplay(0), "S", ConsoleColor.Yellow, Brushes.Yellow) },
         };
 
         public static readonly Dictionary<char, ElementInfo> SymbolToInfo = new();
@@ -75,17 +70,5 @@ namespace BallGame.Rendering
                 return new ElementVisualData(info.VisualSymbol, info.ConsoleColor, info.WinFormsBrush);
             return new ElementVisualData(" ", ConsoleColor.White, Brushes.White);
         }
-    }
-
-    public class ScoreDisplay : GameElement
-    {
-        public int Score { get; set; }
-        public ScoreDisplay(int score)
-        {
-            Score = score;
-            X = 0;
-            Y = 0;
-        }
-        public override bool IsMoveable() => false;
     }
 }

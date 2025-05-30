@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-
 namespace BallGame
 {
     public class TextFileLevelLoader : ILevelLoader
