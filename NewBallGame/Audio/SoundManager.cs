@@ -8,6 +8,7 @@ namespace BallGame.Utils
         private static readonly string BasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "Sounds");
         private static IWavePlayer? backgroundPlayer;
         private static AudioFileReader? backgroundReader;
+        private string? currentBackgroundFile;
 
         public void PlayBackgroundMusic(string fileName)
         {
@@ -24,11 +25,22 @@ namespace BallGame.Utils
                 backgroundReader = new AudioFileReader(fullPath);
                 backgroundPlayer = new WaveOutEvent();
                 backgroundPlayer.Init(backgroundReader);
+                backgroundPlayer.PlaybackStopped += BackgroundPlayer_PlaybackStopped;
                 backgroundPlayer.Play();
+                currentBackgroundFile = fileName;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to play background music: {ex.Message}");
+            }
+        }
+
+        private void BackgroundPlayer_PlaybackStopped(object? sender, StoppedEventArgs e)
+        {
+            if (backgroundReader != null && backgroundPlayer != null && currentBackgroundFile != null)
+            {
+                backgroundReader.Position = 0;
+                backgroundPlayer.Play();
             }
         }
 
@@ -64,11 +76,16 @@ namespace BallGame.Utils
 
         public void StopMusic()
         {
+            if (backgroundPlayer != null)
+            {
+                backgroundPlayer.PlaybackStopped -= BackgroundPlayer_PlaybackStopped;
+            }
             backgroundPlayer?.Stop();
             backgroundPlayer?.Dispose();
             backgroundReader?.Dispose();
             backgroundPlayer = null;
             backgroundReader = null;
+            currentBackgroundFile = null;
         }
     }
 }

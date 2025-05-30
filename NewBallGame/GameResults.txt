@@ -1,4 +1,6 @@
+Score: 710, Time Played: 29.68 seconds, Date: 30/05/2025 22:48:03
 Score: 680, Time Played: 3.56 seconds, Date: 29/05/2025 19:44:54
+Score: 680, Time Played: 5.21 seconds, Date: 30/05/2025 22:13:15
 Score: 540, Time Played: 1.61 seconds, Date: 29/05/2025 19:46:30
 Score: 280, Time Played: 7.20 seconds, Date: 29/05/2025 19:47:07
 Score: 280, Time Played: 14.22 seconds, Date: 30/05/2025 12:00:21
@@ -12,9 +14,7 @@ Score: 200, Time Played: 0.70 seconds, Date: 29/05/2025 18:59:43
 Score: 200, Time Played: 5.38 seconds, Date: 30/05/2025 11:55:19
 Score: 180, Time Played: 6.77 seconds, Date: 30/05/2025 11:28:07
 Score: 180, Time Played: 8.88 seconds, Date: 30/05/2025 11:39:08
-Score: 180, Time Played: 63884218446.47 seconds, Date: 30/05/2025 16:14:06
-Score: 170, Time Played: 63884218065.22 seconds, Date: 30/05/2025 16:07:45
+Score: 180, Time Played: 23.85 seconds, Date: 30/05/2025 22:49:52
 Score: 160, Time Played: 16.60 seconds, Date: 29/05/2025 19:38:10
 Score: 100, Time Played: 0.46 seconds, Date: 29/05/2025 18:59:42
-Score: 100, Time Played: 0.46 seconds, Date: 29/05/2025 18:59:54
-Score: 100, Time Played: 0.89 seconds, Date: 29/05/2025 19:00:02
+Score: 100, Time Played: 6.65 seconds, Date: 30/05/2025 22:49:58

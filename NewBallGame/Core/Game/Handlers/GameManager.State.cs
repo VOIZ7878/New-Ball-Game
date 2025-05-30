@@ -47,7 +47,6 @@ namespace BallGame
                 gameField = StartNewGame(false);
                 gameField.TotalScore = prevScore;
                 gameField.Player.Score = prevPlayerScore;
-
                 field = gameField;
                 renderer.PreRender(field);
                 return true;
@@ -61,6 +60,7 @@ namespace BallGame
             gameField = StartNewGame(true);
             field = gameField;
             controls = new ControlsManager(field, gameStateManager, inputManager, renderer);
+            renderer.PreRender(field);
         }
 
         private void HandleGameOverState(GameField field, DateTime startTime)

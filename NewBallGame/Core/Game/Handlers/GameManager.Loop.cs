@@ -23,8 +23,9 @@ namespace BallGame
                     running = shouldContinue;
                     if (shouldBreak)
                         break;
-                    if (nextState == GameState.Restart)
+                    if (nextState == GameState.Restart || (nextState == GameState.Running && gameField != field))
                     {
+                        field = gameField!;
                         controls = new ControlsManager(field, gameStateManager, inputManager, renderer);
                         renderer.PreRender(field);
                         continue;

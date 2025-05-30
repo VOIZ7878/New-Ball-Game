@@ -15,7 +15,7 @@ namespace BallGame
         private readonly ISoundManager soundManager;
         private readonly IInputManager inputManager;
         private LevelBuilder levelBuilder;
-        
+
         private const string GameOverMessage = "Game Over! Final Total Score: {0}, Time: {1:F2} seconds";
         private const string GameOverEnemyMessage = "Game Over! You have been caught by the enemy. Total Score: {0}, Total Time Played: {1:F2} seconds";
         private const string GameOverNoBallsMessage = "Game Over! No reachable energy balls. Total Score: {0}, Total Time Played: {1:F2} seconds";
@@ -90,7 +90,7 @@ namespace BallGame
         {
             Enemy.UpdateEnemies(gameField!.Enemies, gameField.Grid, gameField);
         }
-        
+
         public void SetGameField(GameField field)
         {
             gameField = field;

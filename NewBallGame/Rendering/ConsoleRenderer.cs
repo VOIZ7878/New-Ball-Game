@@ -6,7 +6,6 @@ namespace BallGame.Rendering
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.SetCursorPosition(0, 0);
             Console.Write(new string(' ', 20));
             Console.SetCursorPosition(0, 0);
             Console.WriteLine($"Score: {field.Player.Score}");
