@@ -9,7 +9,7 @@ namespace BallGame
             Y = y;
         }
 
-        public override bool IsMoveable() => false;
+        public override bool IsOpenToMove() => false;
 
         public virtual void Move(GameField field, ConsoleKey? key = null)
         {
@@ -20,7 +20,7 @@ namespace BallGame
             int newX = X + dx[dir];
             int newY = Y + dy[dir];
 
-            if (field.IsMoveable(newX, newY) && !field.IsEnemy(newX, newY) && !field.IsEnergyBall(newX, newY))
+            if (field.IsOpenToMove(newX, newY) && !field.IsEnemy(newX, newY) && !field.IsEnergyBall(newX, newY))
             {
                 X = newX;
                 Y = newY;

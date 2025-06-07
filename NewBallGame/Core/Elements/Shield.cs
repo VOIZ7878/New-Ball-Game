@@ -5,13 +5,14 @@ namespace BallGame
     public class Shield : GameElement
     {
         public char Direction { get; }
+        public char Mirror => Direction;
 
         public Shield(char direction)
         {
             Direction = direction;
         }
 
-        public override bool IsMoveable() => false;
+        public override bool IsOpenToMove() => false;
 
         public static bool PlaceShield(GameElement?[,] grid, int x, int y, char direction, ISoundManager soundManager)
         {

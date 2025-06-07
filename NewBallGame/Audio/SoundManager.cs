@@ -1,4 +1,3 @@
-using System;
 using NAudio.Wave;
 
 namespace BallGame.Utils
@@ -10,29 +9,85 @@ namespace BallGame.Utils
         private static AudioFileReader? backgroundReader;
         private string? currentBackgroundFile;
 
+        private void PlayAudio(string fileName, bool loop, bool async, EventHandler<StoppedEventArgs>? onStopped = null)
+        {
+            string? fullPath = GetSoundFilePath(fileName);
+            if (fullPath == null) return;
+
+            Action playAction = () =>
+            {
+                try
+                {
+                    var audioFile = new AudioFileReader(fullPath);
+                    var outputDevice = new WaveOutEvent();
+                    outputDevice.Init(audioFile);
+                    if (loop && onStopped != null)
+                        outputDevice.PlaybackStopped += onStopped;
+                    outputDevice.Play();
+
+                    if (!loop)
+                    {
+                        while (outputDevice.PlaybackState == PlaybackState.Playing)
+                        {
+                            Thread.Sleep(10);
+                        }
+                        outputDevice.Dispose();
+                        audioFile.Dispose();
+                    }
+                    else
+                    {
+                        backgroundPlayer = outputDevice;
+                        backgroundReader = audioFile;
+                        currentBackgroundFile = fileName;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to play sound: {ex.Message}");
+                }
+            };
+
+            if (async && !loop)
+                Task.Run(playAction);
+            else
+                playAction();
+        }
+
         public void PlayBackgroundMusic(string fileName)
         {
-            try
-            {
-                string fullPath = Path.Combine(BasePath, fileName);
-                if (!File.Exists(fullPath))
-                {
-                    Console.WriteLine($"Background music file not found: {fullPath}");
-                    return;
-                }
+            StopMusic();
+            PlayAudio(fileName, loop: true, async: false, onStopped: BackgroundPlayer_PlaybackStopped);
+        }
 
-                StopMusic();
-                backgroundReader = new AudioFileReader(fullPath);
-                backgroundPlayer = new WaveOutEvent();
-                backgroundPlayer.Init(backgroundReader);
-                backgroundPlayer.PlaybackStopped += BackgroundPlayer_PlaybackStopped;
-                backgroundPlayer.Play();
-                currentBackgroundFile = fileName;
-            }
-            catch (Exception ex)
+        public void PlaySoundEffect(string effectName)
+        {
+            PlayAudio(effectName, loop: false, async: true);
+        }
+
+        public void StopMusic()
+        {
+            if (backgroundPlayer != null)
             {
-                Console.WriteLine($"Failed to play background music: {ex.Message}");
+                backgroundPlayer.PlaybackStopped -= BackgroundPlayer_PlaybackStopped;
+                backgroundPlayer.Stop();
+                backgroundPlayer.Dispose();
+                backgroundReader?.Dispose();
             }
+
+            backgroundPlayer = null;
+            backgroundReader = null;
+            currentBackgroundFile = null;
+        }
+
+        private static string? GetSoundFilePath(string fileName)
+        {
+            string fullPath = Path.Combine(BasePath, fileName);
+            if (!File.Exists(fullPath))
+            {
+                Console.WriteLine($"Sound file not found: {fullPath}");
+                return null;
+            }
+            return fullPath;
         }
 
         private void BackgroundPlayer_PlaybackStopped(object? sender, StoppedEventArgs e)
@@ -42,50 +97,6 @@ namespace BallGame.Utils
                 backgroundReader.Position = 0;
                 backgroundPlayer.Play();
             }
-        }
-
-        public void PlaySoundEffect(string effectName)
-        {
-            Task.Run(() =>
-            {
-                try
-                {
-                    string fullPath = Path.Combine(BasePath, effectName);
-                    if (!File.Exists(fullPath))
-                    {
-                        Console.WriteLine($"Sound file not found: {fullPath}");
-                        return;
-                    }
-
-                    using var audioFile = new AudioFileReader(fullPath);
-                    using var outputDevice = new WaveOutEvent();
-                    outputDevice.Init(audioFile);
-                    outputDevice.Play();
-
-                    while (outputDevice.PlaybackState == PlaybackState.Playing)
-                    {
-                        System.Threading.Thread.Sleep(10);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Failed to play sound: {ex.Message}");
-                }
-            });
-        }
-
-        public void StopMusic()
-        {
-            if (backgroundPlayer != null)
-            {
-                backgroundPlayer.PlaybackStopped -= BackgroundPlayer_PlaybackStopped;
-            }
-            backgroundPlayer?.Stop();
-            backgroundPlayer?.Dispose();
-            backgroundReader?.Dispose();
-            backgroundPlayer = null;
-            backgroundReader = null;
-            currentBackgroundFile = null;
         }
     }
 }

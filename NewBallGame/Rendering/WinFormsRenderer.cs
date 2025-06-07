@@ -1,12 +1,14 @@
-using BallGame.Rendering;
-
-namespace BallGame
+namespace BallGame.Rendering
 {
     public class WinFormsRenderer : IRenderer
     {
         private readonly Panel panel;
         private readonly RichTextBox consoleBox;
         private readonly Label? scoreLabel;
+
+        private readonly int cellSize = 20;
+        private readonly Font renderFont = new Font("Courier New", 12, FontStyle.Bold);
+        private int? lastScore = null;
 
         public WinFormsRenderer(DoubleBufferedPanel panel, RichTextBox consoleBox, Label? scoreLabel = null)
         {
@@ -16,95 +18,108 @@ namespace BallGame
             this.panel.Paint += OnPaint;
         }
 
-        public GameField? FieldToRender { get; set; }
+        private GameField? fieldToRender;
+        public GameField? FieldToRender
+        {
+            get => fieldToRender;
+            private set => fieldToRender = value;
+        }
+
+        private void DrawElement(Graphics g, string symbol, Brush brush, int x, int y)
+        {
+            g.DrawString(symbol, renderFont, brush, x * cellSize, y * cellSize);
+        }
 
         private void OnPaint(object? sender, PaintEventArgs e)
         {
             if (FieldToRender == null) return;
             var g = e.Graphics;
-            int cellSize = 20;
-            var font = new Font("Courier New", 12, FontStyle.Bold);
+            var field = FieldToRender;
+            var player = field.Player;
+            var ball = field.Ball;
+            if (player == null) return;
 
-            for (int y = 0; y < FieldToRender.Height; y++)
+            var hint = field.Hint;
+            var hintPos = hint.HintPosition;
+            var hintDir = hint.HintDirection;
+            var rayPath = hint.RayPathPoints;
+
+            for (int y = 0; y < field.Height; y++)
             {
-                for (int x = 0; x < FieldToRender.Width; x++)
+                for (int x = 0; x < field.Width; x++)
                 {
-                    var element = FieldToRender[x, y];
-                    if (element is Wall)
+                    // 1. Player
+                    if (player.X == x && player.Y == y)
                     {
-                        var visual = BallGame.Rendering.ElementVisuals.Get(element);
-                        g.DrawString(visual.Symbol, font, visual.Brush, x * cellSize, y * cellSize);
+                        var playerVisual = ElementVisuals.Get(player);
+                        DrawElement(g, playerVisual.Symbol, playerVisual.Brush, x, y);
+                        continue;
+                    }
+                    // 2. Ball
+                    if (ball != null && ball.X == x && ball.Y == y)
+                    {
+                        var ballVisual = ElementVisuals.Get(ball);
+                        DrawElement(g, ballVisual.Symbol, ballVisual.Brush, x, y);
+                        continue;
+                    }
+                    // 3. Enemy
+                    var element = field[x, y];
+                    if (element != null)
+                    {
+                        var visual = ElementVisuals.Get(element);
+                        DrawElement(g, visual.Symbol, visual.Brush, x, y);
+                        continue;
+                    }
+                    // 4. Hint direction
+                    if (hintPos.HasValue && hintPos.Value.x == x && hintPos.Value.y == y && hintDir.HasValue)
+                    {
+                        var hintVisual = ElementVisuals.Get(hint);
+                        DrawElement(g, hintDir.Value.ToString(), hintVisual.Brush, x, y);
+                        continue;
+                    }
+                    // 5. Hint ray path
+                    if (rayPath.Any(p => p.x == x && p.y == y))
+                    {
+                        DrawElement(g, ".", Brushes.Cyan, x, y);
+                        continue;
                     }
                 }
-            }
-
-            var player = FieldToRender.Player;
-            var playerVisual = BallGame.Rendering.ElementVisuals.Get(player);
-            g.DrawString(playerVisual.Symbol, font, playerVisual.Brush, player.X * cellSize, player.Y * cellSize);
-
-            if (FieldToRender.Ball is { X: var bx, Y: var by })
-            {
-                var ballVisual = BallGame.Rendering.ElementVisuals.Get(FieldToRender.Ball);
-                g.DrawString(ballVisual.Symbol, font, ballVisual.Brush, bx * cellSize, by * cellSize);
-            }
-
-            for (int y = 0; y < FieldToRender.Height; y++)
-            {
-                for (int x = 0; x < FieldToRender.Width; x++)
-                {
-                    var element = FieldToRender[x, y];
-                    if (element != null && !(element is Wall) && element != player && element != FieldToRender.Ball)
-                    {
-                        var visual = BallGame.Rendering.ElementVisuals.Get(element);
-                        g.DrawString(visual.Symbol, font, visual.Brush, x * cellSize, y * cellSize);
-                    }
-                }
-            }
-
-            var hintPos = FieldToRender.Hint.GetHintPosition();
-            var hintDir = FieldToRender.Hint.GetHintDirection();
-            if (hintPos.HasValue && hintDir.HasValue)
-            {
-                var x = hintPos.Value.x;
-                var y = hintPos.Value.y;
-                var hintVisual = BallGame.Rendering.ElementVisuals.Get(FieldToRender.Hint);
-                g.DrawString(hintDir.Value.ToString(), font, hintVisual.Brush, x * cellSize, y * cellSize);
             }
         }
+
         public void Clear()
         {
-            if (panel.InvokeRequired)
-                panel.Invoke(() => panel.Refresh());
-            else
-                panel.Refresh();
-
-            if (consoleBox.InvokeRequired)
-                consoleBox.Invoke(() => consoleBox.Clear());
-            else
-                consoleBox.Clear();
+            Invoke(panel, () => panel.Refresh());
+            Invoke(consoleBox, () => consoleBox.Clear());
         }
 
         public void WriteLine(string message)
         {
-            if (consoleBox.InvokeRequired)
-                consoleBox.Invoke(() => consoleBox.AppendText(message + "\n"));
-            else
-                consoleBox.AppendText(message + "\n");
+            Invoke(consoleBox, () => consoleBox.AppendText(message + "\n"));
         }
 
         public void Pause(int milliseconds)
         {
-            Thread.Sleep(milliseconds);
+            if (System.Threading.SynchronizationContext.Current != null)
+            {
+                var t = Task.Delay(milliseconds);
+                t.Wait();
+            }
+            else
+            {
+                Thread.Sleep(milliseconds);
+            }
         }
         
         private void UpdateScoreLabel(GameField field)
         {
-            if (scoreLabel != null)
+            if (scoreLabel != null && field.Player != null)
             {
-                if (scoreLabel.InvokeRequired)
-                    scoreLabel.Invoke(() => scoreLabel.Text = $"Score: {field.Player.Score}");
-                else
-                    scoreLabel.Text = $"Score: {field.Player.Score}";
+                if (lastScore != field.Player.Score)
+                {
+                    Invoke(scoreLabel, () => scoreLabel.Text = $"Score: {field.Player.Score}");
+                    lastScore = field.Player.Score;
+                }
             }
         }
 
@@ -118,10 +133,15 @@ namespace BallGame
         {
             FieldToRender = field;
             UpdateScoreLabel(field);
-            if (panel.InvokeRequired)
-                panel.Invoke(() => panel.Invalidate());
+            Invoke(panel, () => panel.Invalidate());
+        }
+
+        private void Invoke(Control control, Action action)
+        {
+            if (control.InvokeRequired)
+                control.Invoke(action);
             else
-                panel.Invalidate();
+                action();
         }
     }
 }

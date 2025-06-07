@@ -8,15 +8,11 @@ namespace BallGame
     {
         private readonly string saveFilePath;
         private readonly IRenderer renderer;
-        private readonly ISoundManager soundManager;
-        private readonly IInputManager inputManager;
 
-        public StateManager(string saveFilePath, IRenderer renderer, ISoundManager soundManager, IInputManager inputManager)
+        public StateManager(string saveFilePath, IRenderer renderer)
         {
             this.saveFilePath = saveFilePath;
             this.renderer = renderer;
-            this.soundManager = soundManager;
-            this.inputManager = inputManager;
         }
 
         public void SaveGameState(GameField field)
@@ -39,7 +35,7 @@ namespace BallGame
                 if (File.Exists(saveFilePath))
                 {
                     string json = File.ReadAllText(saveFilePath);
-                    return JSONLevelLoader.Deserialize(json, renderer, soundManager, inputManager);
+                    return JSONLevelLoader.Deserialize(json);
                 }
             }
             catch (Exception ex)

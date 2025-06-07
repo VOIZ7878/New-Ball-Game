@@ -2,10 +2,10 @@ namespace BallGame
 {
     public partial class GameField
     {
-        public bool IsMoveable(int x, int y)
+        public bool IsOpenToMove(int x, int y)
         {
             if (x < 0 || x >= Width || y < 0 || y >= Height) return false;
-            return grid[x, y]?.IsMoveable() ?? true;
+            return grid[x, y]?.IsOpenToMove() ?? true;
         }
 
         public bool IsInside(int x, int y)

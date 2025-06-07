@@ -21,7 +21,7 @@ namespace BallGame
                     X = newX;
                     Y = newY;
                 }
-                else if (field.IsMoveable(newX, newY) && !field.IsEnemy(newX, newY) && !field.IsEnergyBall(newX, newY))
+                else if (field.IsOpenToMove(newX, newY) && !field.IsEnemy(newX, newY) && !field.IsEnergyBall(newX, newY))
                 {
                     int oldX = X, oldY = Y;
                     X = newX;

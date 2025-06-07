@@ -27,6 +27,20 @@ namespace BallGame
 
         public void CollectEnergyBall(int x, int y) => EnergyBall.Collect(grid, x, y, ref energyBallCount, Player, new SoundManager());
         public bool PlaceShield(int x, int y, char direction) => Shield.PlaceShield(grid, x, y, direction, new SoundManager());
-
+        public static void Reflect(char mirror, ref int dx, ref int dy)
+        {
+            if (mirror == '/')
+            {
+                int temp = dx;
+                dx = -dy;
+                dy = -temp;
+            }
+            else if (mirror == '\\')
+            {
+                int temp = dx;
+                dx = dy;
+                dy = temp;
+            }
+        }
     }
 }

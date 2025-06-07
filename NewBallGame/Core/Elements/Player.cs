@@ -2,11 +2,8 @@ namespace BallGame
 {
     public class Player : GameElement
     {
-        public override bool IsMoveable()
-        {
-            return true;
-        }
         public int Score { get; set; }
+        public override bool IsOpenToMove() => true;
 
         public Player(int x, int y)
         {
@@ -29,7 +26,7 @@ namespace BallGame
             {
                 int newX = X + delta.dx;
                 int newY = Y + delta.dy;
-                if (field.IsMoveable(newX, newY))
+                if (field.IsOpenToMove(newX, newY))
                 {
                     X = newX;
                     Y = newY;

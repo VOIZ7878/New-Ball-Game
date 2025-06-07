@@ -2,6 +2,18 @@ namespace BallGame
 {
     public partial class MainForm
     {
+        private void SetButtonActive(Button btn)
+        {
+            btn.BackColor = Color.FromArgb(60, 60, 60);
+            btn.ForeColor = Color.Orange;
+        }
+
+        private void SetButtonInactive(Button btn)
+        {
+            btn.BackColor = Color.Transparent;
+            btn.ForeColor = Color.White;
+        }
+
         private void AddMenuButtons()
         {
             var menuItems = new (string Text, MenuChoice Choice)[]
@@ -28,27 +40,10 @@ namespace BallGame
                     FlatAppearance = { BorderSize = 0, MouseOverBackColor = Color.FromArgb(40, 40, 40) }
                 };
 
-                btn.MouseEnter += (s, e) =>
-                {
-                    btn.BackColor = Color.FromArgb(60, 60, 60);
-                    btn.ForeColor = Color.Orange;
-                };
-                btn.MouseLeave += (s, e) =>
-                {
-                    btn.BackColor = Color.Transparent;
-                    btn.ForeColor = Color.White;
-                };
-
-                btn.GotFocus += (s, e) =>
-                {
-                    btn.BackColor = Color.FromArgb(60, 60, 60);
-                    btn.ForeColor = Color.Orange;
-                };
-                btn.LostFocus += (s, e) =>
-                {
-                    btn.BackColor = Color.Transparent;
-                    btn.ForeColor = Color.White;
-                };
+                btn.MouseEnter += (s, e) => SetButtonActive(btn);
+                btn.GotFocus   += (s, e) => SetButtonActive(btn);
+                btn.MouseLeave += (s, e) => SetButtonInactive(btn);
+                btn.LostFocus  += (s, e) => SetButtonInactive(btn);
 
                 btn.Click += (s, e) =>
                 {

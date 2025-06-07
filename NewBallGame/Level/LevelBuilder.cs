@@ -2,9 +2,9 @@ namespace BallGame
 {
     public class LevelBuilder
     {
-        private readonly Random rnd = new Random();
+        private readonly Random rnd = new();
 
-        public LevelBuilder() { }
+        private GameField field = null!;
 
         public GameField CreateGameField(bool randomSize = true)
         {
@@ -13,7 +13,6 @@ namespace BallGame
 
             if (randomSize)
             {
-                Random rnd = new Random();
                 width += rnd.Next(5);
                 height += rnd.Next(5);
             }
@@ -24,149 +23,136 @@ namespace BallGame
         public void InitializeField(GameField gameField)
         {
             const int maxAttempts = 10;
-            int attempt = 0;
 
-            while (attempt++ < maxAttempts)
+            for (int attempt = 0; attempt < maxAttempts; attempt++)
             {
-                InitializeGrid(gameField);
-                PlaceWalls(gameField);
-                PlaceBall(gameField);
-                PlacePlayer(gameField);
-                PlaceEnergyBalls(gameField);
-                PlaceEnemies(gameField);
+                field = gameField;
+                InitializeGrid();
+                PlacePerimeterWalls();
 
-                if (IsLevelPassable(gameField))
-                    return;
+                field.Ball = new Ball(field.Width / 2, field.Height / 2);
+                PlacePlayer();
+
+                /*PlaceElements(
+                    count: 1,
+                    factory: (x, y) => new Ball(x, y),
+                    canPlace: (x, y) => true,
+                    onPlaced: (e, x, y) => field.Ball = (Ball)e
+                );
+
+                PlaceElements(
+                    count: 1,
+                    factory: (x, y) => new Player(x, y),
+                    canPlace: (x, y) => field[x, y] == null,
+                    onPlaced: (e, x, y) => field.Player = (Player)e
+                );*/
+
+                // Walls
+                PlaceElements(
+                    count: rnd.Next(5, 15),
+                    factory: (x, y) => new Wall(),
+                    canPlace: (x, y) => Math.Abs(x - field.Ball.X) > 1 || Math.Abs(y - field.Ball.Y) > 1
+                        && (field.Player == null || field.Player.X != x || field.Player.Y != y)
+                );
+
+                // EnergyBalls
+                int energyCount = rnd.Next(2, 4);
+                field.EnergyBallList.Clear();
+                EnergyBall? first = null;
+                PlaceElements(
+                    count: energyCount,
+                    factory: (x, y) => new EnergyBall(),
+                    canPlace: (x, y) => Math.Abs(x - field.Ball.X) > 1 || Math.Abs(y - field.Ball.Y) > 1,
+                    onPlaced: (e, x, y) => {
+                        var eb = (EnergyBall)e;
+                        field.EnergyBallList.Add((eb, x, y));
+                        if (first == null) first = eb;
+                    }
+                );
+                field.EnergyBall = first;
+                field.EnergyBallCount = energyCount;
+
+                // Enemies
+                PlaceElements(
+                    count: rnd.Next(1, 4),
+                    factory: (x, y) => new Enemy(x, y),
+                    canPlace: (x, y) => !field.IsEnemy(x, y)
+                        && (x != field.Ball.X || y != field.Ball.Y)
+                        && (field.Player == null || x != field.Player.X || y != field.Player.Y),
+                    onPlaced: (e, x, y) => field.Enemies.Add((Enemy)e)
+                );
+
+                if (IsLevelPassable()) return;
             }
 
             throw new Exception("Failed to generate a passable level.");
         }
 
-        private void InitializeGrid(GameField gameField)
+        private void InitializeGrid()
         {
-            for (int x = 0; x < gameField.Width; x++)
-                for (int y = 0; y < gameField.Height; y++)
-                    gameField[x, y] = null;
+            for (int x = 0; x < field.Width; x++)
+                for (int y = 0; y < field.Height; y++)
+                    field[x, y] = null;
 
-            gameField.Enemies.Clear();
-            gameField.EnergyBallList.Clear();
+            field.Enemies.Clear();
+            field.EnergyBallList.Clear();
         }
 
-        private void PlaceWalls(GameField gameField)
+        private void PlacePerimeterWalls()
         {
-            for (int x = 0; x < gameField.Width; x++)
-            {
-                for (int y = 0; y < gameField.Height; y++)
-                {
-                    if (x == 0 || y == 0 || x == gameField.Width - 1 || y == gameField.Height - 1)
-                        gameField[x, y] = new Wall();
-                }
-            }
-
-            int wallCount = rnd.Next(5, 15);
-            for (int i = 0; i < wallCount; i++)
-            {
-                int x, y;
-                do
-                {
-                    x = rnd.Next(1, gameField.Width - 1);
-                    y = rnd.Next(1, gameField.Height - 1);
-                }
-                while (gameField[x, y] != null ||
-                       (gameField.Ball != null && Math.Abs(x - gameField.Ball.X) <= 1 && Math.Abs(y - gameField.Ball.Y) <= 1) ||
-                       (gameField.Player != null && gameField.Player.X == x && gameField.Player.Y == y));
-
-                gameField[x, y] = new Wall();
-            }
+            for (int x = 0; x < field.Width; x++)
+                for (int y = 0; y < field.Height; y++)
+                    if (x == 0 || y == 0 || x == field.Width - 1 || y == field.Height - 1)
+                        field[x, y] = new Wall();
         }
 
-        private void PlaceBall(GameField gameField)
-        {
-            gameField.Ball = new Ball(gameField.Width / 2, gameField.Height / 2);
-        }
-
-        private void PlacePlayer(GameField gameField)
+        private void PlacePlayer()
         {
             int x, y;
             do
             {
-                x = rnd.Next(1, gameField.Width - 1);
-                y = rnd.Next(1, gameField.Height - 1);
+                x = rnd.Next(1, field.Width - 1);
+                y = rnd.Next(1, field.Height - 1);
             }
-            while (gameField[x, y] != null);
-            gameField.Player = new Player(x, y);
+            while (field[x, y] != null);
+
+            field.Player = new Player(x, y);
         }
-
-        private void PlaceEnergyBalls(GameField gameField)
+        
+        private void PlaceElements(
+            int count,
+            Func<int, int, GameElement> factory,
+            Func<int, int, bool>? canPlace = null,
+            Action<GameElement, int, int>? onPlaced = null)
         {
-            if (gameField.Ball == null) return;
-
-            int energyBallCount = rnd.Next(2, 4);
-            gameField.EnergyBallList.Clear();
-
-            for (int i = 0; i < energyBallCount; i++)
+            int placed = 0, attempts = 0;
+            int maxAttempts = count * 20;
+            while (placed < count && attempts++ < maxAttempts)
             {
-                int x, y;
-                do
-                {
-                    x = rnd.Next(1, gameField.Width - 1);
-                    y = rnd.Next(1, gameField.Height - 1);
-                }
-                while (gameField[x, y] != null || Math.Abs(x - gameField.Ball.X) <= 1 && Math.Abs(y - gameField.Ball.Y) <= 1);
-
-                var energyBall = new EnergyBall();
-                gameField[x, y] = energyBall;
-                gameField.EnergyBallList.Add((energyBall, x, y));
-
-                if (i == 0)
-                    gameField.EnergyBall = energyBall;
+                int x = rnd.Next(1, field.Width - 1);
+                int y = rnd.Next(1, field.Height - 1);
+                if (field[x, y] != null) continue;
+                if (canPlace != null && !canPlace(x, y)) continue;
+                var element = factory(x, y);
+                field[x, y] = element;
+                onPlaced?.Invoke(element, x, y);
+                placed++;
             }
-
-            gameField.EnergyBallCount = energyBallCount;
+            if (placed < count)
+                throw new Exception($"Failed to place elements ({placed}/{count})");
         }
 
-        private void PlaceEnemies(GameField gameField)
+        private bool IsLevelPassable()
         {
-            int enemiesCount = rnd.Next(1, 4);
-
-            for (int i = 0; i < enemiesCount; i++)
-            {
-                int x, y;
-                do
-                {
-                    x = rnd.Next(1, gameField.Width - 1);
-                    y = rnd.Next(1, gameField.Height - 1);
-                }
-                while (gameField[x, y] != null ||
-                       gameField.IsEnemy(x, y) ||
-                       (gameField.Ball != null && x == gameField.Ball.X && y == gameField.Ball.Y) ||
-                       (gameField.Player != null && x == gameField.Player.X && y == gameField.Player.Y));
-
-                var enemy = new Enemy(x, y);
-                gameField.Enemies.Add(enemy);
-                gameField[x, y] = enemy;
-            }
-        }
-
-        private bool IsLevelPassable(GameField gameField)
-        {
-            if (gameField.Ball == null || gameField.Player == null || gameField.EnergyBallList == null || gameField.EnergyBallList.Count == 0)
+            if (field.Ball == null || field.Player == null || field.EnergyBallList.Count == 0)
                 return false;
 
-            foreach (var (_, x, y) in gameField.EnergyBallList)
-            {
-                if (!Pathfinding.PathExists(gameField, gameField.Ball.X, gameField.Ball.Y, x, y))
-                    return false;
-            }
-
-            if (!Pathfinding.PathExists(gameField, gameField.Player.X, gameField.Player.Y, gameField.Ball.X, gameField.Ball.Y))
+            if (!Pathfinding.PathExists(field, field.Player.X, field.Player.Y, field.Ball.X, field.Ball.Y))
                 return false;
 
-            foreach (var (_, x, y) in gameField.EnergyBallList)
-            {
-                if (!Pathfinding.PathExists(gameField, gameField.Player.X, gameField.Player.Y, x, y))
+            foreach (var (_, x, y) in field.EnergyBallList)
+                if (!Pathfinding.PathExists(field, field.Ball.X, field.Ball.Y, x, y))
                     return false;
-            }
 
             return true;
         }

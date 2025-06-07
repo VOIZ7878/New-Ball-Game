@@ -10,7 +10,7 @@ namespace BallGame
             Y = y;
         }
 
-        public override bool IsMoveable() => false;
+        public override bool IsOpenToMove() => false;
 
         public void Move(GameField field)
         {
@@ -30,17 +30,9 @@ namespace BallGame
                 int oldDx = Dx;
                 int oldDy = Dy;
 
-                if (shieldDir == '/')
+                if (shieldDir == '/' || shieldDir == '\\')
                 {
-                    int temp = Dx;
-                    Dx = -Dy;
-                    Dy = -temp;
-                }
-                else if (shieldDir == '\\')
-                {
-                    int temp = Dx;
-                    Dx = Dy;
-                    Dy = temp;
+                    GameField.Reflect(shieldDir, ref Dx, ref Dy);
                 }
 
                 int reflectedX = newX + Dx;

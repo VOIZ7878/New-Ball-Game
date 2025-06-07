@@ -15,7 +15,7 @@ namespace BallGame
             {
                 (int newX, int newY) = nextStep.Value;
 
-                if (field.IsMoveable(newX, newY) && !field.IsEnemy(newX, newY) && !field.IsEnergyBall(newX, newY))
+                if (field.IsOpenToMove(newX, newY) && !field.IsEnemy(newX, newY) && !field.IsEnergyBall(newX, newY))
                 {
                     X = newX;
                     Y = newY;
