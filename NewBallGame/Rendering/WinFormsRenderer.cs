@@ -30,6 +30,14 @@ namespace BallGame.Rendering
             g.DrawString(symbol, renderFont, brush, x * cellSize, y * cellSize);
         }
 
+        private (string symbol, Brush brush) GetVisual(GameElement element, string? overrideSymbol = null)
+        {
+            if (element == null) return (" ", Brushes.Black);
+            var visual = ElementVisuals.Get(element);
+            string symbol = overrideSymbol ?? visual.Symbol;
+            return (symbol, visual.Brush);
+        }
+
         private void OnPaint(object? sender, PaintEventArgs e)
         {
             if (FieldToRender == null) return;
@@ -51,30 +59,30 @@ namespace BallGame.Rendering
                     // 1. Player
                     if (player.X == x && player.Y == y)
                     {
-                        var playerVisual = ElementVisuals.Get(player);
-                        DrawElement(g, playerVisual.Symbol, playerVisual.Brush, x, y);
+                        var (symbol, brush) = GetVisual(player);
+                        DrawElement(g, symbol, brush, x, y);
                         continue;
                     }
                     // 2. Ball
                     if (ball != null && ball.X == x && ball.Y == y)
                     {
-                        var ballVisual = ElementVisuals.Get(ball);
-                        DrawElement(g, ballVisual.Symbol, ballVisual.Brush, x, y);
+                        var (symbol, brush) = GetVisual(ball);
+                        DrawElement(g, symbol, brush, x, y);
                         continue;
                     }
-                    // 3. Enemy
+                    // 3. Enemy or other element
                     var element = field[x, y];
-                    if (element != null)
+                    if (element is GameElement ge)
                     {
-                        var visual = ElementVisuals.Get(element);
-                        DrawElement(g, visual.Symbol, visual.Brush, x, y);
+                        var (symbol, brush) = GetVisual(ge);
+                        DrawElement(g, symbol, brush, x, y);
                         continue;
                     }
                     // 4. Hint direction
                     if (hintPos.HasValue && hintPos.Value.x == x && hintPos.Value.y == y && hintDir.HasValue)
                     {
-                        var hintVisual = ElementVisuals.Get(hint);
-                        DrawElement(g, hintDir.Value.ToString(), hintVisual.Brush, x, y);
+                        var (symbol, brush) = GetVisual(hint, hintDir.Value.ToString());
+                        DrawElement(g, symbol, brush, x, y);
                         continue;
                     }
                     // 5. Hint ray path

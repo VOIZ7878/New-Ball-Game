@@ -23,6 +23,14 @@ namespace BallGame.Rendering
             }
         }
 
+        private (char symbol, ConsoleColor color) GetVisual(GameElement element, char? overrideSymbol = null)
+        {
+            if (element == null) return (' ', Console.ForegroundColor);
+            var visual = ElementVisuals.Get(element);
+            char symbol = overrideSymbol ?? visual.Symbol[0];
+            return (symbol, visual.Color);
+        }
+
         public void PostRender(GameField field)
         {
             DrawScore(field);
@@ -42,21 +50,15 @@ namespace BallGame.Rendering
 
                     if (field.Player != null && field.Player.X == x && field.Player.Y == y)
                     {
-                        var visual = ElementVisuals.Get(field.Player);
-                        symbol = visual.Symbol[0];
-                        color = visual.Color;
+                        (symbol, color) = GetVisual(field.Player);
                     }
                     else if (field.Ball != null && field.Ball.X == x && field.Ball.Y == y)
                     {
-                        var visual = ElementVisuals.Get(field.Ball);
-                        symbol = visual.Symbol[0];
-                        color = visual.Color;
+                        (symbol, color) = GetVisual(field.Ball);
                     }
                     else if (hintPos.HasValue && hintPos.Value.x == x && hintPos.Value.y == y && hintDir.HasValue)
                     {
-                        var visual = ElementVisuals.Get(field.Hint);
-                        symbol = hintDir.Value.ToString()[0];
-                        color = visual.Color;
+                        (symbol, color) = GetVisual(field.Hint, hintDir.Value.ToString()[0]);
                     }
                     else if (rayPath.Any(p => p.x == x && p.y == y))
                     {
@@ -68,11 +70,9 @@ namespace BallGame.Rendering
                         symbol = '@';
                         color = ConsoleColor.Yellow;
                     }
-                    else if (cell != null)
+                    else if (cell is GameElement ge)
                     {
-                        var visual = ElementVisuals.Get(cell);
-                        symbol = visual.Symbol[0];
-                        color = visual.Color;
+                        (symbol, color) = GetVisual(ge);
                     }
 
                     Console.ForegroundColor = color;

@@ -7,7 +7,9 @@ namespace BallGame.Level
             { typeof(Player), (field, e, x, y) => field.Player = (Player)e },
             { typeof(Ball), (field, e, x, y) => field.Ball = (Ball)e },
             { typeof(EnergyBall), (field, e, x, y) => { field[x, y] = e; field.EnergyBallList.Add(((EnergyBall)e, x, y)); } },
-            { typeof(Enemy), (field, e, x, y) => { field[x, y] = e; field.Enemies.Add((Enemy)e); } }
+            { typeof(Enemy), (field, e, x, y) => { field[x, y] = e; field.Enemies.Add((Enemy)e); } },
+            { typeof(SmartEnemy), (field, e, x, y) => { field[x, y] = e; field.Enemies.Add((Enemy)e); } },
+            { typeof(BossEnemy), (field, e, x, y) => { field[x, y] = e; field.Enemies.Add((Enemy)e); } }
         };
 
         public static void PlaceSymbol(GameField gameField, char symbol, int x, int y)
