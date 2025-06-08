@@ -56,39 +56,45 @@ namespace BallGame.Rendering
             {
                 for (int x = 0; x < field.Width; x++)
                 {
-                    // 1. Player
                     if (player.X == x && player.Y == y)
                     {
                         var (symbol, brush) = GetVisual(player);
                         DrawElement(g, symbol, brush, x, y);
                         continue;
                     }
-                    // 2. Ball
                     if (ball != null && ball.X == x && ball.Y == y)
                     {
                         var (symbol, brush) = GetVisual(ball);
                         DrawElement(g, symbol, brush, x, y);
                         continue;
                     }
-                    // 3. Enemy or other element
                     var element = field[x, y];
-                    if (element is GameElement ge)
+                    if (element is Enemy)
                     {
-                        var (symbol, brush) = GetVisual(ge);
+                        var (symbol, brush) = GetVisual(element);
                         DrawElement(g, symbol, brush, x, y);
                         continue;
                     }
-                    // 4. Hint direction
+                    if (field.IsEnergyBall(x, y))
+                    {
+                        DrawElement(g, "@", Brushes.Yellow, x, y);
+                        continue;
+                    }
                     if (hintPos.HasValue && hintPos.Value.x == x && hintPos.Value.y == y && hintDir.HasValue)
                     {
                         var (symbol, brush) = GetVisual(hint, hintDir.Value.ToString());
                         DrawElement(g, symbol, brush, x, y);
                         continue;
                     }
-                    // 5. Hint ray path
                     if (rayPath.Any(p => p.x == x && p.y == y))
                     {
                         DrawElement(g, ".", Brushes.Cyan, x, y);
+                        continue;
+                    }
+                    if (element is GameElement ge)
+                    {
+                        var (symbol, brush) = GetVisual(ge);
+                        DrawElement(g, symbol, brush, x, y);
                         continue;
                     }
                 }

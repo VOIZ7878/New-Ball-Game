@@ -35,7 +35,7 @@ namespace BallGame
                     if (nx >= 0 && nx < gameField.Width && ny >= 0 && ny < gameField.Height && !visited[nx, ny])
                     {
                         var cell = gameField[nx, ny];
-                        if (cell == null || cell is EnergyBall || !(cell is Wall || cell is Shield))
+                        if (cell == null || cell is EnergyBall)
                         {
                             queue.Enqueue((nx, ny));
                         }

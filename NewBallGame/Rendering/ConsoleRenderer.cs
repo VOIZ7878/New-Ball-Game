@@ -56,7 +56,16 @@ namespace BallGame.Rendering
                     {
                         (symbol, color) = GetVisual(field.Ball);
                     }
-                    else if (hintPos.HasValue && hintPos.Value.x == x && hintPos.Value.y == y && hintDir.HasValue)
+                    else if (cell is Enemy)
+                    {
+                        (symbol, color) = GetVisual((GameElement)cell);
+                    }
+                    else if (field.IsEnergyBall(x, y))
+                    {
+                        symbol = '@';
+                        color = ConsoleColor.Yellow;
+                    }
+                    else if ((hintPos.HasValue && hintPos.Value.x == x && hintPos.Value.y == y && hintDir.HasValue))
                     {
                         (symbol, color) = GetVisual(field.Hint, hintDir.Value.ToString()[0]);
                     }
@@ -64,11 +73,6 @@ namespace BallGame.Rendering
                     {
                         symbol = '.';
                         color = ConsoleColor.Cyan;
-                    }
-                    else if (field.IsEnergyBall(x, y))
-                    {
-                        symbol = '@';
-                        color = ConsoleColor.Yellow;
                     }
                     else if (cell is GameElement ge)
                     {

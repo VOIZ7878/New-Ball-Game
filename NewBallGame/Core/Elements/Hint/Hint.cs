@@ -5,6 +5,7 @@ namespace BallGame
         private (int x, int y)? hintPosition;
         private char? hintDirection;
         private List<(int x, int y)> pathPoints = new();
+        private List<(int x, int y, char mirror)> hintShields = new();
         public (int x, int y)? HintPosition => hintPosition;
         public char? HintDirection => hintDirection;
         public List<(int x, int y)> RayPathPoints => pathPoints;
@@ -16,20 +17,20 @@ namespace BallGame
             if (gameField.Ball == null || gameField.EnergyBallCount == 0)
                 return;
 
-            var forward = (dx: gameField.Ball.Dx, dy: gameField.Ball.Dy);
-            var backward = (dx: -gameField.Ball.Dx, dy: -gameField.Ball.Dy);
-            var forwardPath = TraceRayToEnergy(gameField, 5, 50, forward.dx, forward.dy);
-            var backwardPath = TraceRayToEnergy(gameField, 5, 50, backward.dx, backward.dy);
-            var bestPath = ChooseBestPath(forwardPath, backwardPath);
+            var forwardDir = (dx: gameField.Ball.Dx, dy: gameField.Ball.Dy);
+            var backwardDir = (dx: -gameField.Ball.Dx, dy: -gameField.Ball.Dy);
+            var forwardRay = FindBestRayPath(gameField, 5, 50, forwardDir.dx, forwardDir.dy);
+            var backwardRay = FindBestRayPath(gameField, 5, 50, backwardDir.dx, backwardDir.dy);
+            var optimalRay = SelectOptimalRayPath(forwardRay, backwardRay);
 
-            if (bestPath != null)
+            if (optimalRay != null)
             {
-                pathPoints = FilterPathForDisplay(bestPath.Points, gameField);
-                SetHintForShield(bestPath, gameField);
+                pathPoints = FilterPathForDisplay(optimalRay.Points, gameField);
+                SetHintForVirtualShields(optimalRay, 2);
             }
         }
 
-        private RayPath? TraceRayToEnergy(GameField gameField, int maxShields, int maxSteps, int dirDx, int dirDy)
+        private RayPath? FindBestRayPath(GameField gameField, int maxVirtualShields, int maxRaySteps, int dirDx, int dirDy)
         {
             if (gameField.Ball == null)
                 return null;
@@ -39,25 +40,25 @@ namespace BallGame
             if (gameField[start.x, start.y] is EnergyBall)
                 return new RayPath(start.x, start.y, dir.dx, dir.dy, new List<(int, int)> { start });
 
-            var visited = new Dictionary<(int x, int y, int dx, int dy), (int shields, int length)>();
-            var pq = new PriorityQueue<RayPath, (int shields, int length)>();
-            pq.Enqueue(new RayPath(start.x, start.y, dir.dx, dir.dy, new List<(int, int)> { start }), (0, 0));
+            var visitedStates = new Dictionary<(int x, int y, int dx, int dy), (int shields, int length)>();
+            var rayQueue = new PriorityQueue<RayPath, (int shields, int length)>();
+            rayQueue.Enqueue(new RayPath(start.x, start.y, dir.dx, dir.dy, new List<(int, int)> { start }), (0, 0));
 
-            RayPath? bestPath = null;
+            RayPath? bestRay = null;
             int minShields = int.MaxValue;
             int minLength = int.MaxValue;
 
-            while (pq.Count > 0)
+            while (rayQueue.Count > 0)
             {
-                var path = pq.Dequeue();
-                int shieldCount = path.Shields.Count;
-                int x = path.X;
-                int y = path.Y;
-                int dx = path.Dx;
-                int dy = path.Dy;
-                var currentPoints = new List<(int, int)>(path.Points);
+                var ray = rayQueue.Dequeue();
+                int shieldCount = ray.Shields.Count;
+                int x = ray.X;
+                int y = ray.Y;
+                int dx = ray.Dx;
+                int dy = ray.Dy;
+                var rayPoints = new List<(int, int)>(ray.Points);
 
-                for (int step = 0; step < maxSteps; step++)
+                for (int step = 0; step < maxRaySteps; step++)
                 {
                     x += dx;
                     y += dy;
@@ -65,18 +66,12 @@ namespace BallGame
                     if (!gameField.IsInside(x, y))
                         break;
 
-                    currentPoints.Add((x, y));
+                    rayPoints.Add((x, y));
 
                     var cell = gameField[x, y];
                     if (cell is EnergyBall)
                     {
-                        int pathLength = currentPoints.Count;
-                        if (shieldCount < minShields || (shieldCount == minShields && pathLength < minLength))
-                        {
-                            minShields = shieldCount;
-                            minLength = pathLength;
-                            bestPath = path.WithNewPosition(x, y, currentPoints);
-                        }
+                        UpdateBestRayIfNeeded(ref bestRay, ref minShields, ref minLength, ray, x, y, rayPoints, shieldCount);
                         break;
                     }
 
@@ -85,41 +80,68 @@ namespace BallGame
 
                     if (cell is Shield shield)
                     {
-                        int ndx = dx, ndy = dy;
-                        GameField.Reflect(shield.Mirror, ref ndx, ref ndy);
-                        dx = ndx;
-                        dy = ndy;
+                        (dx, dy) = ReflectRayFromShield(shield, dx, dy);
                         continue;
                     }
 
-                    var state = (x, y, dx, dy);
-                    int pathLen = currentPoints.Count;
-                    if (visited.TryGetValue(state, out var prev) && (prev.shields < shieldCount || (prev.shields == shieldCount && prev.length <= pathLen)))
+                    if (!ShouldVisitState(visitedStates, x, y, dx, dy, shieldCount, rayPoints.Count))
                         continue;
-                    visited[state] = (shieldCount, pathLen);
 
-                    if (shieldCount < maxShields)
+                    if (shieldCount < maxVirtualShields)
                     {
-                        foreach (char mirror in new[] { '/', '\\' })
-                        {
-                            if (IsValidShieldPosition(gameField, x, y))
-                            {
-                                int ndx = dx, ndy = dy;
-                                GameField.Reflect(mirror, ref ndx, ref ndy);
-                                var newState = (x, y, ndx, ndy);
-                                int newShieldCount = shieldCount + 1;
-                                int newPathLen = pathLen;
-                                if (!visited.TryGetValue(newState, out var prev2) || (newShieldCount < prev2.shields || (newShieldCount == prev2.shields && newPathLen < prev2.length)))
-                                {
-                                    var newPath = path.WithVirtualShield(x, y, mirror, ndx, ndy, currentPoints);
-                                    pq.Enqueue(newPath, (newShieldCount, newPathLen));
-                                }
-                            }
-                        }
+                        TryAddVirtualShields(gameField, ray, x, y, dx, dy, shieldCount, rayPoints, rayQueue, visitedStates);
                     }
                 }
             }
-            return bestPath;
+            return bestRay;
+        }
+
+        private static (int dx, int dy) ReflectRayFromShield(Shield shield, int dx, int dy)
+        {
+            int ndx = dx, ndy = dy;
+            GameField.Reflect(shield.Mirror, ref ndx, ref ndy);
+            return (ndx, ndy);
+        }
+
+        private static void UpdateBestRayIfNeeded(ref RayPath? bestRay, ref int minShields, ref int minLength, RayPath ray, int x, int y, List<(int, int)> rayPoints, int shieldCount)
+        {
+            int pathLength = rayPoints.Count;
+            if (shieldCount < minShields || (shieldCount == minShields && pathLength < minLength))
+            {
+                minShields = shieldCount;
+                minLength = pathLength;
+                bestRay = ray.WithNewPosition(x, y, rayPoints);
+            }
+        }
+
+        private static bool ShouldVisitState(Dictionary<(int x, int y, int dx, int dy), (int shields, int length)> visitedStates, int x, int y, int dx, int dy, int shieldCount, int pathLen)
+        {
+            var state = (x, y, dx, dy);
+            if (visitedStates.TryGetValue(state, out var prev) && (prev.shields < shieldCount || (prev.shields == shieldCount && prev.length <= pathLen)))
+                return false;
+            visitedStates[state] = (shieldCount, pathLen);
+            return true;
+        }
+
+        private void TryAddVirtualShields(GameField gameField, RayPath ray, int x, int y, int dx, int dy, int shieldCount, List<(int, int)> rayPoints, PriorityQueue<RayPath, (int shields, int length)> rayQueue, Dictionary<(int x, int y, int dx, int dy), (int shields, int length)> visitedStates)
+        {
+            char[] mirrors = new char[] { '/', '\\' };
+            foreach (char mirror in mirrors)
+            {
+                if (IsValidShieldPosition(gameField, x, y))
+                {
+                    int ndx = dx, ndy = dy;
+                    GameField.Reflect(mirror, ref ndx, ref ndy);
+                    var newState = (x, y, ndx, ndy);
+                    int newShieldCount = shieldCount + 1;
+                    int newPathLen = rayPoints.Count;
+                    if (!visitedStates.TryGetValue(newState, out var prev2) || (newShieldCount < prev2.shields || (newShieldCount == prev2.shields && newPathLen < prev2.length)))
+                    {
+                        var newRay = ray.WithVirtualShield(x, y, mirror, ndx, ndy, rayPoints);
+                        rayQueue.Enqueue(newRay, (newShieldCount, newPathLen));
+                    }
+                }
+            }
         }
 
         private bool IsValidShieldPosition(GameField gameField, int x, int y)
@@ -129,35 +151,42 @@ namespace BallGame
                    gameField[x, y] == null;
         }
 
-        private RayPath? ChooseBestPath(RayPath? path1, RayPath? path2)
+        private RayPath? SelectOptimalRayPath(RayPath? ray1, RayPath? ray2)
         {
-            if (path1 == null) return path2;
-            if (path2 == null) return path1;
-            int s1 = path1.Shields.Count, s2 = path2.Shields.Count;
-            int l1 = path1.Points.Count, l2 = path2.Points.Count;
-            if (s1 < s2 || (s1 == s2 && l1 <= l2)) return path1;
-            return path2;
+            if (ray1 == null) return ray2;
+            if (ray2 == null) return ray1;
+            var score1 = (ray1.Shields.Count, ray1.Points.Count);
+            var score2 = (ray2.Shields.Count, ray2.Points.Count);
+            return score1.CompareTo(score2) <= 0 ? ray1 : ray2;
         }
 
         private List<(int x, int y)> FilterPathForDisplay(List<(int x, int y)> points, GameField gameField)
         {
-            return points.Where(p => (gameField[p.x, p.y] == null || gameField[p.x, p.y] is Ball) && !(gameField[p.x, p.y] is EnergyBall)).ToList();
+            return points.Where(p => gameField[p.x, p.y] switch
+            {
+                null => true,
+                Ball => true,
+                EnergyBall => false,
+                _ => false
+            }).ToList();
         }
 
-        private void SetHintForShield(RayPath path, GameField gameField)
+        public void SetHintForVirtualShields(RayPath ray, int count)
         {
-            if (!path.Shields.Any()) return;
-            var (sx, sy, sdir) = path.Shields.First();
-            if (gameField.Ball != null && sx == gameField.Ball.X && sy == gameField.Ball.Y)
+            hintShields.Clear();
+            if (ray?.Shields == null || count <= 0) return;
+            foreach (var shield in ray.Shields.Take(count))
+                hintShields.Add(shield);
+            if (hintShields.Count > 0)
             {
-                char chosenMirror = (sdir == '/' ? '/' : '\\');
+                var (sx, sy, sdir) = hintShields[0];
                 hintPosition = (sx, sy);
-                hintDirection = chosenMirror;
+                hintDirection = sdir;
             }
             else
             {
-                hintPosition = (sx, sy);
-                hintDirection = sdir;
+                hintPosition = null;
+                hintDirection = null;
             }
         }
 
@@ -166,7 +195,39 @@ namespace BallGame
             hintPosition = null;
             hintDirection = null;
             pathPoints.Clear();
+            hintShields.Clear();
         }
 
+    }
+    
+    public class RayPath
+    {
+        public int X { get; }
+        public int Y { get; }
+        public int Dx { get; }
+        public int Dy { get; }
+        public List<(int x, int y, char mirror)> Shields { get; }
+        public List<(int x, int y)> Points { get; }
+
+        public RayPath(int x, int y, int dx, int dy, List<(int, int)> points, List<(int, int, char)>? shields = null)
+        {
+            X = x;
+            Y = y;
+            Dx = dx;
+            Dy = dy;
+            Points = new List<(int, int)>(points);
+            Shields = shields != null ? new List<(int, int, char)>(shields) : new();
+        }
+
+        public RayPath WithVirtualShield(int x, int y, char mirror, int newDx, int newDy, List<(int, int)> points)
+        {
+            var newShields = new List<(int, int, char)>(Shields) { (x, y, mirror) };
+            return new RayPath(x, y, newDx, newDy, new List<(int, int)>(points), newShields);
+        }
+
+        public RayPath WithNewPosition(int x, int y, List<(int, int)> points)
+        {
+            return new RayPath(x, y, Dx, Dy, new List<(int, int)>(points), Shields);
+        }
     }
 }

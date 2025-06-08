@@ -47,8 +47,19 @@ namespace BallGame
                     return;
                 }
 
+                int prevX = X;
+                int prevY = Y;
                 X = reflectedX;
                 Y = reflectedY;
+
+                if (field.IsShield(X, Y, out _))
+                {
+                    X = prevX;
+                    Y = prevY;
+                    Dx = -oldDx;
+                    Dy = -oldDy;
+                    return;
+                }
 
                 if (field.IsEnergyBall(X, Y))
                 {
