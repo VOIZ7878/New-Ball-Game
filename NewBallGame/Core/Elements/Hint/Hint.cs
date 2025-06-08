@@ -166,6 +166,7 @@ namespace BallGame
             {
                 null => true,
                 Ball => true,
+                Enemy => true,
                 EnergyBall => false,
                 _ => false
             }).ToList();

@@ -14,10 +14,7 @@ namespace BallGame.Rendering
                     if (cell is Wall)
                     {
                         var visual = ElementVisuals.Get(cell);
-                        Console.SetCursorPosition(x, y + 1);
-                        Console.ForegroundColor = visual.Color;
-                        Console.Write(visual.Symbol);
-                        Console.ResetColor();
+                        DrawCell(x, y, visual.Symbol[0], visual.Color);
                     }
                 }
             }
@@ -29,6 +26,14 @@ namespace BallGame.Rendering
             var visual = ElementVisuals.Get(element);
             char symbol = overrideSymbol ?? visual.Symbol[0];
             return (symbol, visual.Color);
+        }
+
+        private void DrawCell(int x, int y, char symbol, ConsoleColor color)
+        {
+            Console.SetCursorPosition(x, y + 1);
+            Console.ForegroundColor = color;
+            Console.Write(symbol);
+            Console.ResetColor();
         }
 
         public void PostRender(GameField field)
@@ -44,7 +49,6 @@ namespace BallGame.Rendering
                     var cell = field[x, y];
                     if (cell is Wall) continue;
 
-                    Console.SetCursorPosition(x, y + 1);
                     char symbol = ' ';
                     ConsoleColor color = Console.ForegroundColor;
 
@@ -79,9 +83,7 @@ namespace BallGame.Rendering
                         (symbol, color) = GetVisual(ge);
                     }
 
-                    Console.ForegroundColor = color;
-                    Console.Write(symbol);
-                    Console.ResetColor();
+                    DrawCell(x, y, symbol, color);
                 }
             }
         }
