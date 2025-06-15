@@ -53,6 +53,8 @@ namespace BallGame
 
         private async Task HandleSettingsAsync()
         {
+            await menuManager.ShowSettingsMenuAsync(GenerationSettings);
+            SettingsManager.Save(GenerationSettings);
             await Task.Yield();
         }
 
@@ -62,9 +64,9 @@ namespace BallGame
             soundManager.StopMusic();
             currentState = GameState.Exit;
         #if WINDOWS
-                    System.Windows.Forms.Application.Exit();
+            System.Windows.Forms.Application.Exit();
         #else
-                    Environment.Exit(0);
+            Environment.Exit(0);
         #endif
             await Task.Yield();
         }

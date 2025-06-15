@@ -1,0 +1,22 @@
+{
+  "EnergyBallRange": {
+    "Min": 2,
+    "Max": 2
+  },
+  "WallRange": {
+    "Min": 3,
+    "Max": 4
+  },
+  "EnemyRange": {
+    "Min": 3,
+    "Max": 3
+  },
+  "FieldWidth": {
+    "Min": 10,
+    "Max": 20
+  },
+  "FieldHeight": {
+    "Min": 10,
+    "Max": 20
+  }
+}

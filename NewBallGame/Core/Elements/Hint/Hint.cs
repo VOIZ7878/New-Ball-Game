@@ -3,11 +3,11 @@ namespace BallGame
     public class Hint : GameElement
     {
         private (int x, int y)? hintPosition;
+        public (int x, int y)? HintPosition => hintPosition;
         private char? hintDirection;
+        public char? HintDirection => hintDirection;
         private List<(int x, int y)> pathPoints = new();
         private List<(int x, int y, char mirror)> hintShields = new();
-        public (int x, int y)? HintPosition => hintPosition;
-        public char? HintDirection => hintDirection;
         public List<(int x, int y)> RayPathPoints => pathPoints;
         public override bool IsOpenToMove() => true;
 

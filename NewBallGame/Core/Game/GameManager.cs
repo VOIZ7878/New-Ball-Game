@@ -1,6 +1,6 @@
 using BallGame.Rendering;
 using BallGame.Input;
-using BallGame.Utils;
+using BallGame.Audio;
 
 namespace BallGame
 {
@@ -68,6 +68,7 @@ namespace BallGame
                 { GameState.Restart, async (field, controls, playerMoved, startTime) => { HandleRestartState(ref field, ref controls); renderer.PreRender(field); await Task.CompletedTask; return (true, false); } },
                 { GameState.GameOver, async (field, controls, playerMoved, startTime) => { HandleGameOverState(field, startTime); await Task.CompletedTask; return (false, true); } },
             };
+            GenerationSettings = SettingsManager.Load();
         }
 
         public string LastScoreDisplay => $"Score: {lastScore}, Time Played: {lastTimePlayed:F2} seconds, Date: {lastDate:dd/MM/yyyy HH:mm:ss}";
@@ -111,6 +112,7 @@ namespace BallGame
         public GameField StartNewGame(bool resetScore)
         {
             gameField = levelBuilder.CreateGameField(true);
+            levelBuilder.SetGenerationSettings(GenerationSettings);
             levelBuilder.InitializeField(gameField);
             if (resetScore)
             {
@@ -121,6 +123,7 @@ namespace BallGame
             renderer.PreRender(gameField);
             return gameField;
         }
+        
         public GameField? LoadSavedGame()
         {
             var loadedField = gameStateManager.LoadGameState();
@@ -148,5 +151,7 @@ namespace BallGame
                 }
             }
         }
+
+        public GenerationSettings GenerationSettings { get; set; } = SettingsManager.Load();
     }
 }

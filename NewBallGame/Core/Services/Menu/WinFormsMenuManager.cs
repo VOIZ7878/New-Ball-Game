@@ -5,6 +5,7 @@ namespace BallGame
         private readonly Form form;
         private TaskCompletionSource<MenuChoice>? menuTcs;
         private Label? lastScoreLabel;
+        public event Action<MenuChoice>? MenuChoiceSelected;
 
         public WinFormsMenuManager(Form form)
         {
@@ -30,8 +31,6 @@ namespace BallGame
 
         public Task<MenuChoice> ShowMainMenuAsync(string lastScoreDisplay = "Last Score: 0")
         {
-            if (form is MainForm mainForm)
-                mainForm.ShowMenuPanel();
             if (lastScoreLabel != null)
             {
                 if (lastScoreLabel.InvokeRequired)
@@ -45,13 +44,26 @@ namespace BallGame
 
         public void SelectOption(MenuChoice choice)
         {
-            if (form is MainForm mainForm && ((choice == MenuChoice.StartGame) || (choice == MenuChoice.LoadGame) || (choice == MenuChoice.ManualLevel)))
-            {
-                mainForm.ShowGamePanel();
-            }
+            MenuChoiceSelected?.Invoke(choice);
             if (menuTcs != null && !menuTcs.Task.IsCompleted)
             {
                 menuTcs.SetResult(choice);
+            }
+        }
+
+        public async Task ShowSettingsMenuAsync(GenerationSettings settings)
+        {
+            await Task.Yield();
+            if (form is not null)
+            {
+                var dlg = new SettingsForm(settings);
+                if (dlg.ShowDialog(form) == System.Windows.Forms.DialogResult.OK)
+                {
+                    var updated = dlg.GenerationSettings;
+                    settings.EnergyBallRange = updated.EnergyBallRange;
+                    settings.WallRange = updated.WallRange;
+                    settings.EnemyRange = updated.EnemyRange;
+                }
             }
         }
     }

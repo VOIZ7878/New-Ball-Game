@@ -1,4 +1,4 @@
-namespace BallGame.Utils
+namespace BallGame.Audio
 {
     public interface ISoundManager
     {

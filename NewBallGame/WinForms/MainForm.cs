@@ -1,6 +1,6 @@
 using BallGame.Rendering;
 using BallGame.Input;
-using BallGame.Utils;
+using BallGame.Audio;
 
 namespace BallGame
 {
@@ -31,11 +31,20 @@ namespace BallGame
 
             inputManager = new WinFormsInputManager();
             menuManager = new WinFormsMenuManager(this);
+            menuManager.MenuChoiceSelected += OnMenuChoiceSelected;
 
             this.KeyPreview = true;
             this.KeyDown += (s, e) => inputManager.OnKeyDown(s, e);
 
             this.Load += MainForm_Load;
+        }
+
+        private void OnMenuChoiceSelected(MenuChoice choice)
+        {
+            if (choice == MenuChoice.StartGame || choice == MenuChoice.LoadGame || choice == MenuChoice.ManualLevel)
+                ShowGamePanel();
+            else
+                ShowMenuPanel();
         }
 
         private async void MainForm_Load(object? sender, EventArgs e)

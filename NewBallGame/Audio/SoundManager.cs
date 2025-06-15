@@ -1,6 +1,6 @@
 using NAudio.Wave;
 
-namespace BallGame.Utils
+namespace BallGame.Audio
 {
     public class SoundManager : ISoundManager
     {

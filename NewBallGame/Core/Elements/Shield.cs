@@ -1,4 +1,4 @@
-using BallGame.Utils;
+using BallGame.Audio;
 
 namespace BallGame
 {

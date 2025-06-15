@@ -5,6 +5,12 @@ namespace BallGame
         private readonly Random rnd = new();
 
         private GameField field = null!;
+        private GenerationSettings generationSettings = new GenerationSettings();
+
+        public void SetGenerationSettings(GenerationSettings settings)
+        {
+            generationSettings = settings;
+        }
 
         public GameField CreateGameField(bool randomSize = true)
         {
@@ -13,8 +19,8 @@ namespace BallGame
 
             if (randomSize)
             {
-                width += rnd.Next(5);
-                height += rnd.Next(5);
+                width = rnd.Next(generationSettings.FieldWidth.Min, generationSettings.FieldWidth.Max + 1);
+                height = rnd.Next(generationSettings.FieldHeight.Min, generationSettings.FieldHeight.Max + 1);
             }
 
             return new GameField(width, height);
@@ -49,14 +55,14 @@ namespace BallGame
 
                 // Walls
                 PlaceElements(
-                    count: rnd.Next(5, 15),
+                    count: rnd.Next(generationSettings.WallRange.Min, generationSettings.WallRange.Max + 1),
                     factory: (x, y) => new Wall(),
                     canPlace: (x, y) => Math.Abs(x - field.Ball.X) > 1 || Math.Abs(y - field.Ball.Y) > 1
                         && (field.Player == null || field.Player.X != x || field.Player.Y != y)
                 );
 
                 // EnergyBalls
-                int energyCount = rnd.Next(2, 4);
+                int energyCount = rnd.Next(generationSettings.EnergyBallRange.Min, generationSettings.EnergyBallRange.Max + 1);
                 field.EnergyBallList.Clear();
                 EnergyBall? first = null;
                 PlaceElements(
@@ -74,7 +80,7 @@ namespace BallGame
 
                 // Enemies
                 PlaceElements(
-                    count: rnd.Next(1, 4),
+                    count: rnd.Next(generationSettings.EnemyRange.Min, generationSettings.EnemyRange.Max + 1),
                     factory: (x, y) => new Enemy(x, y),
                     canPlace: (x, y) => !field.IsEnemy(x, y)
                         && (x != field.Ball.X || y != field.Ball.Y)
