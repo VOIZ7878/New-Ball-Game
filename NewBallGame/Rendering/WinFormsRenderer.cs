@@ -7,7 +7,7 @@ namespace BallGame.Rendering
         private readonly Label? scoreLabel;
 
         private readonly int cellSize = 20;
-        private readonly Font renderFont = new Font("Courier New", 12, FontStyle.Bold);
+        private readonly Font renderFont = new Font("Consolas", 12, FontStyle.Bold);
         private int? lastScore = null;
 
         public WinFormsRenderer(DoubleBufferedPanel panel, RichTextBox consoleBox, Label? scoreLabel = null)

@@ -1,11 +1,11 @@
 {
   "EnergyBallRange": {
-    "Min": 2,
+    "Min": 1,
     "Max": 2
   },
   "WallRange": {
-    "Min": 3,
-    "Max": 4
+    "Min": 20,
+    "Max": 20
   },
   "EnemyRange": {
     "Min": 3,

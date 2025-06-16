@@ -1,3 +1,5 @@
+.gitignore
+
 # Build artifacts
 bin/
 obj/
@@ -28,16 +30,11 @@ Thumbs.db
 *.nupkg
 *.snupkg
 packages/
-NewBallGame/GameState.json
-NewBallGame/GameResults.txt
-.gitignore
-NewBallGame/GameResults.txt
-NewBallGame/GameState.json
+
+NewBallGame/assets
 NewBallGame/GameState.json
 NewBallGame/LastScore.txt
 NewBallGame/GameResults.txt
-NewBallGame/GameResults.txt
-NewBallGame/GameState.json
-NewBallGame/LastScore.txt
-NewBallGame/LastScore.txt
 NewBallGame/assets/UML.puml
+
+

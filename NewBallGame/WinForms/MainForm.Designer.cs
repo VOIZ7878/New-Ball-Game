@@ -39,9 +39,8 @@ partial class MainForm
     private void InitializeUI()
     {
         this.Text = "Ball Game";
-        this.WindowState = FormWindowState.Maximized;
         this.FormBorderStyle = FormBorderStyle.Sizable;
-        this.MinimumSize = new Size(800, 700);
+        this.MinimumSize = new Size(800, 450);
         this.BackColor = Color.Black;
 
         gamePanel = new Panel
@@ -77,38 +76,46 @@ partial class MainForm
             Visible = true,
             BackColor = Color.Black
         };
+
         var menuLayout = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
             ColumnCount = 2,
-            RowCount = 2,
+            RowCount = 1,
             BackColor = Color.Black
         };
-        menuLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
-        menuLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60F));
-        menuLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+        menuLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
+        menuLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F));
         menuLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 
         buttonPanel = new FlowLayoutPanel
         {
             Dock = DockStyle.Fill,
             FlowDirection = FlowDirection.TopDown,
-            AutoSize = true,
+            AutoSize = false,
             WrapContents = false,
-            Padding = new Padding(10, 10, 0, 0),
+            Padding = new Padding(10, 30, 0, 0),
             BackColor = Color.Black
         };
-        menuLayout.Controls.Add(buttonPanel, 0, 1);
-        menuLayout.SetRowSpan(buttonPanel, 2);
 
-        var rightPanel = new Panel { Dock = DockStyle.Fill, BackColor = Color.Black };
+        var rightPanel = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 2,
+            BackColor = Color.Black
+        };
+        rightPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F)); // lastScoreLabel
+        rightPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // consoleBox
+        rightPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+
         lastScoreLabel = new Label
         {
             Name = "lastScoreLabel",
             Text = "Last Score: 0",
-            Dock = DockStyle.Top,
+            Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleLeft,
-            Font = new Font("Consolas", 12, FontStyle.Bold),
+            Font = new Font("Consolas", 10, FontStyle.Bold),
             ForeColor = Color.Orange,
             BackColor = Color.Black,
             Padding = new Padding(10, 0, 0, 0),
@@ -118,17 +125,19 @@ partial class MainForm
         {
             Dock = DockStyle.Fill,
             ReadOnly = true,
-            ForeColor = Color.Gold,
+            ForeColor = Color.Gray,
             BackColor = Color.Black,
-            Font = new Font("Consolas", 10),
-            Margin = new Padding(10),
-            BorderStyle = BorderStyle.None
+            Font = new Font("Consolas", 10, FontStyle.Bold),
+            Margin = new Padding(10, 0, 10, 10),
+            BorderStyle = BorderStyle.FixedSingle,
+            WordWrap = true,
+            ScrollBars = RichTextBoxScrollBars.Vertical
         };
-        rightPanel.Controls.Add(consoleBox);
-        rightPanel.Controls.Add(lastScoreLabel);
-        menuLayout.Controls.Add(rightPanel, 1, 1);
-        menuLayout.SetRowSpan(rightPanel, 2);
+        rightPanel.Controls.Add(lastScoreLabel, 0, 0);
+        rightPanel.Controls.Add(consoleBox, 0, 1);
 
+        menuLayout.Controls.Add(buttonPanel, 0, 0);
+        menuLayout.Controls.Add(rightPanel, 1, 0);
         menuPanel.Controls.Add(menuLayout);
         this.Controls.Add(menuPanel);
 
