@@ -26,7 +26,7 @@ namespace BallGame
                 ("Show Results", MenuChoice.ShowResults),
                 ("Settings", MenuChoice.Settings),
                 ("Exit", MenuChoice.Exit),
-                ("ManualLevel", MenuChoice.ManualLevel)
+                ("Manual Level", MenuChoice.ManualLevel)
             };
             int selected = 0;
 
@@ -110,6 +110,50 @@ namespace BallGame
                 renderer.Clear();
                 renderer.WriteLine("Settings updated successfully!");
                 await Task.Delay(700);
+            }
+        }
+
+        public async Task<string?> ShowLevelSelectMenuAsync()
+        {
+            await Task.Yield();
+            var levelDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "Levels");
+            var files = Directory.GetFiles(levelDir, "*.txt").Select(Path.GetFileName).ToArray();
+            if (files.Length == 0)
+            {
+                renderer.WriteLine("No levels. You can add levels to the 'assets/Levels' directory.");
+                inputManager.ReadKey(true);
+                return null;
+            }
+            int selected = 0;
+            while (true)
+            {
+                renderer.Clear();
+                renderer.WriteLine("=== SELECT LEVEL ===");
+                for (int i = 0; i < files.Length; i++)
+                {
+                    string prefix = i == selected ? "> " : "  ";
+                    renderer.WriteLine($"{prefix}{files[i]}");
+                }
+                renderer.WriteLine("ESC - back");
+                var key = inputManager.ReadKey(true);
+                if (key == ConsoleKey.UpArrow)
+                    selected = (selected - 1 + files.Length) % files.Length;
+                else if (key == ConsoleKey.DownArrow)
+                    selected = (selected + 1) % files.Length;
+                else if (key == ConsoleKey.Enter)
+                {
+                    var fileName = files.ElementAtOrDefault(selected);
+                    if (!string.IsNullOrEmpty(fileName))
+                        return fileName;
+                    else
+                    {
+                        renderer.WriteLine("Error: level not found.");
+                        await Task.Delay(1000);
+                        return null;
+                    }
+                }
+                else if (key == ConsoleKey.Escape)
+                    return null;
             }
         }
 

@@ -5,5 +5,6 @@ namespace BallGame
         Task<MenuChoice> ShowMainMenuAsync(string lastScoreDisplay);
         event Action<MenuChoice>? MenuChoiceSelected;
         Task ShowSettingsMenuAsync(GenerationSettings settings);
+        Task<string?> ShowLevelSelectMenuAsync();
     }
 }

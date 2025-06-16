@@ -97,15 +97,17 @@ namespace BallGame
             gameField = field;
         }
 
-        public GameField LoadLevel(string fileName)
+        public GameField LoadLevel(string fileName, bool playMusic = true)
         {
-            var lines = System.IO.File.ReadAllLines(System.IO.Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory, "assets", "Levels", fileName));
-            int height = lines.Length;
-            int width = lines[0].Length;
+            levelBuilder = new LevelBuilder();
             gameField = levelBuilder.CreateGameField(false);
+            levelBuilder.SetGenerationSettings(GenerationSettings);
             ILevelLoader loader = new TextFileLevelLoader();
             loader.Load(gameField, fileName);
+            gameField.StartTime = DateTime.Now;
+            renderer.PreRender(gameField);
+            if (playMusic)
+                soundManager.PlayBackgroundMusic("background.mp3");
             return gameField;
         }
 

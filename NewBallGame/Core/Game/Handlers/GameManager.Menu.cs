@@ -73,11 +73,12 @@ namespace BallGame
 
         private async Task HandleManualLevelAsync()
         {
-            levelBuilder = new LevelBuilder();
-            gameField = LoadLevel("level1.txt");
-            soundManager.PlayBackgroundMusic("background.mp3");
-            currentState = GameState.Running;
-            await Task.Yield();
+            var fileName = await menuManager.ShowLevelSelectMenuAsync();
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                gameField = LoadLevel(fileName);
+                currentState = GameState.Running;
+            }
         }
 
         private async Task HandleLoadGameAsync()

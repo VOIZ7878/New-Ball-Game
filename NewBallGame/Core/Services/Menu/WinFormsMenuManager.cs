@@ -66,5 +66,22 @@ namespace BallGame
                 }
             }
         }
+
+        public async Task<string?> ShowLevelSelectMenuAsync()
+        {
+            await Task.Yield();
+            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            {
+                dialog.Title = "Choose Level File";
+                dialog.Filter = "Level files (*.txt)|*.txt";
+                dialog.InitialDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "Levels");
+                dialog.RestoreDirectory = true;
+                if (dialog.ShowDialog(form) == System.Windows.Forms.DialogResult.OK)
+                {
+                    return System.IO.Path.GetFileName(dialog.FileName);
+                }
+            }
+            return null;
+        }
     }
 }
