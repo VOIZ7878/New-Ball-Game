@@ -5,7 +5,7 @@ namespace BallGame
 {
     public class ResultManager
     {
-        private const string ResultsFilePath = "GameResults.txt";
+        private const string ResultsFilePath = "assets/Data/GameResults.txt";
         private const int MaxSavedResults = 20;
         private readonly IRenderer renderer;
         private readonly IInputManager inputManager;
@@ -67,7 +67,7 @@ namespace BallGame
         {
             try
             {
-                const string LastScoreFile = "LastScore.txt";
+                const string LastScoreFile = "assets/Data/LastScore.txt";
                 if (File.Exists(LastScoreFile))
                 {
                     var line = File.ReadAllText(LastScoreFile);
@@ -89,7 +89,7 @@ namespace BallGame
         {
             try
             {
-                const string LastScoreFile = "LastScore.txt";
+                const string LastScoreFile = "assets/Data/LastScore.txt";
                 File.WriteAllText(LastScoreFile, $"{score}|{timePlayed}|{date:O}");
             }
             catch { }

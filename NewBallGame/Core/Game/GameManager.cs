@@ -37,7 +37,7 @@ namespace BallGame
             this.inputManager = inputManager;
             this.soundManager = soundManager;
             this.menuManager = menuManager;
-            gameStateManager = new StateManager("GameState.json", renderer);
+            gameStateManager = new StateManager("assets/Data/GameState.json", renderer);
             resultManager = new ResultManager(renderer, inputManager);
             levelBuilder = new LevelBuilder();
             (lastScore, lastTimePlayed, lastDate) = resultManager.LoadLastScore();

@@ -1,6 +1,5 @@
 using BallGame.Rendering;
 using BallGame.Utils;
-using BallGame.Input;
 
 namespace BallGame
 {
