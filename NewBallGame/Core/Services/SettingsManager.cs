@@ -5,7 +5,7 @@ namespace BallGame
 {
     public static class SettingsManager
     {
-        private const string SettingsFile = "assets/Data/GenerationSettings.json";
+        private const string SettingsFile = "assets/Data/Settings.json";
 
         public static void Save(GenerationSettings settings)
         {

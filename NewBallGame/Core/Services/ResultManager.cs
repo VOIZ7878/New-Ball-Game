@@ -23,7 +23,7 @@ namespace BallGame
                 string newEntry = $"Score: {score}, Time Played: {timePlayedSeconds:F2} seconds, Date: {DateTime.Now}";
                 string[] existingEntries = File.Exists(ResultsFilePath)
                     ? File.ReadAllLines(ResultsFilePath)
-                    : new string[0];
+                    : Array.Empty<string>();
 
                 var updatedEntries = existingEntries
                     .Append(newEntry)
@@ -54,7 +54,31 @@ namespace BallGame
                 renderer.WriteLine("Game Results:");
                 var lines = File.ReadAllLines(ResultsFilePath);
                 foreach (var line in lines.TakeLast(20))
-                    renderer.WriteLine(line);
+                {
+                    var parts = line.Split(", ");
+                    if (parts.Length == 3)
+                    {
+                        var scorePart = parts[0];
+                        var timePart = parts[1];
+                        var datePart = parts[2];
+                        var timeValue = timePart.Replace("Time Played:", "").Replace("seconds", "").Trim();
+                        if (double.TryParse(timeValue, out double seconds))
+                        {
+                            double minutes = seconds / 60.0;
+                            timePart = $"Time Played: {minutes:F2} min";
+                        }
+                        var dateValue = datePart.Replace("Date:", "").Trim();
+                        if (DateTime.TryParse(dateValue, out DateTime dt))
+                        {
+                            datePart = $"Date: {dt:MM/dd/yyyy HH:mm}";
+                        }
+                        renderer.WriteLine($"{scorePart}, {timePart}, {datePart}");
+                    }
+                    else
+                    {
+                        renderer.WriteLine(line);
+                    }
+                }
             }
             else
             {

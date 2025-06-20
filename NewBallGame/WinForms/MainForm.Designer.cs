@@ -31,16 +31,18 @@ partial class MainForm
     {
         this.components = new System.ComponentModel.Container();
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 450);
+        this.ClientSize = new System.Drawing.Size(800, 600);
         this.Text = "Form1";
     }
     private FlowLayoutPanel buttonPanel;
     private Label lastScoreLabel;
+    private Label actionsLabel;
+
     private void InitializeUI()
     {
         this.Text = "Ball Game";
         this.FormBorderStyle = FormBorderStyle.Sizable;
-        this.MinimumSize = new Size(800, 450);
+        this.MinimumSize = new Size(800, 600);
         this.BackColor = Color.Black;
 
         gamePanel = new Panel
@@ -48,6 +50,7 @@ partial class MainForm
             Dock = DockStyle.Fill,
             Visible = false
         };
+
         scoreLabel = new Label
         {
             Text = "Score: 0",
@@ -105,17 +108,28 @@ partial class MainForm
             RowCount = 2,
             BackColor = Color.Black
         };
-        rightPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F)); // lastScoreLabel
-        rightPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // consoleBox
+        rightPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+        rightPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
         rightPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
 
+        actionsLabel = new Label
+        {
+            Text = "In-game actions: R - Restart; H - Hint; ESC - Exit",
+            Dock = DockStyle.Top,
+            TextAlign = ContentAlignment.MiddleRight,
+            Font = new Font("Consolas", 14f, FontStyle.Bold),
+            ForeColor = Color.Orange,
+            BackColor = Color.Black,
+            Padding = new Padding(10, 0, 0, 0),
+            Height = 40
+        };
         lastScoreLabel = new Label
         {
             Name = "lastScoreLabel",
             Text = "Last Score: 0",
             Dock = DockStyle.Fill,
-            TextAlign = ContentAlignment.MiddleLeft,
-            Font = new Font("Consolas", 10, FontStyle.Bold),
+            TextAlign = ContentAlignment.MiddleRight,
+            Font = new Font("Consolas", 14f, FontStyle.Bold),
             ForeColor = Color.Orange,
             BackColor = Color.Black,
             Padding = new Padding(10, 0, 0, 0),
@@ -125,14 +139,17 @@ partial class MainForm
         {
             Dock = DockStyle.Fill,
             ReadOnly = true,
-            ForeColor = Color.Gray,
+            ForeColor = Color.Orange,
             BackColor = Color.Black,
-            Font = new Font("Consolas", 10, FontStyle.Bold),
+            Font = new Font("Consolas", 12f, FontStyle.Bold),
             Margin = new Padding(10, 0, 10, 10),
-            BorderStyle = BorderStyle.FixedSingle,
             WordWrap = true,
-            ScrollBars = RichTextBoxScrollBars.Vertical
+            Height = 430,
+            BorderStyle = BorderStyle.None
         };
+        consoleBox.SelectionAlignment = HorizontalAlignment.Right;
+
+        rightPanel.Controls.Add(actionsLabel, 0, 0);
         rightPanel.Controls.Add(lastScoreLabel, 0, 0);
         rightPanel.Controls.Add(consoleBox, 0, 1);
 

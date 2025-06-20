@@ -63,6 +63,8 @@ namespace BallGame
                     settings.EnergyBallRange = updated.EnergyBallRange;
                     settings.WallRange = updated.WallRange;
                     settings.EnemyRange = updated.EnemyRange;
+                    settings.FieldWidth = updated.FieldWidth;
+                    settings.FieldHeight = updated.FieldHeight;
                 }
             }
         }

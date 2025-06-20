@@ -7,7 +7,7 @@ namespace BallGame.Rendering
         private readonly Label? scoreLabel;
 
         private readonly int cellSize = 20;
-        private readonly Font renderFont = new Font("Consolas", 12, FontStyle.Bold);
+        private readonly Font renderFont = new Font("Consolas", 15, FontStyle.Bold);
         private int? lastScore = null;
 
         public WinFormsRenderer(DoubleBufferedPanel panel, RichTextBox consoleBox, Label? scoreLabel = null)
@@ -25,9 +25,9 @@ namespace BallGame.Rendering
             private set => fieldToRender = value;
         }
 
-        private void DrawElement(Graphics g, string symbol, Brush brush, int x, int y)
+        private void DrawElement(Graphics g, string symbol, Brush brush, int x, int y, int offsetX = 0, int offsetY = 0)
         {
-            g.DrawString(symbol, renderFont, brush, x * cellSize, y * cellSize);
+            g.DrawString(symbol, renderFont, brush, x * cellSize + offsetX, y * cellSize + offsetY);
         }
 
         private (string symbol, Brush brush) GetVisual(GameElement element, string? overrideSymbol = null)
@@ -47,6 +47,11 @@ namespace BallGame.Rendering
             var ball = field.Ball;
             if (player == null) return;
 
+            int fieldWidthPx = field.Width * cellSize;
+            int fieldHeightPx = field.Height * cellSize;
+            int offsetX = (panel.Width - fieldWidthPx) / 2;
+            int offsetY = (panel.Height - fieldHeightPx) / 2;
+
             var hint = field.Hint;
             var hintPos = hint.HintPosition;
             var hintDir = hint.HintDirection;
@@ -59,42 +64,42 @@ namespace BallGame.Rendering
                     if (player.X == x && player.Y == y)
                     {
                         var (symbol, brush) = GetVisual(player);
-                        DrawElement(g, symbol, brush, x, y);
+                        DrawElement(g, symbol, brush, x, y, offsetX, offsetY);
                         continue;
                     }
                     if (ball != null && ball.X == x && ball.Y == y)
                     {
                         var (symbol, brush) = GetVisual(ball);
-                        DrawElement(g, symbol, brush, x, y);
+                        DrawElement(g, symbol, brush, x, y, offsetX, offsetY);
                         continue;
                     }
                     var element = field[x, y];
                     if (element is Enemy)
                     {
                         var (symbol, brush) = GetVisual(element);
-                        DrawElement(g, symbol, brush, x, y);
+                        DrawElement(g, symbol, brush, x, y, offsetX, offsetY);
                         continue;
                     }
                     if (field.IsEnergyBall(x, y))
                     {
-                        DrawElement(g, "@", Brushes.Yellow, x, y);
+                        DrawElement(g, "@", Brushes.Yellow, x, y, offsetX, offsetY);
                         continue;
                     }
                     if (hintPos.HasValue && hintPos.Value.x == x && hintPos.Value.y == y && hintDir.HasValue)
                     {
                         var (symbol, brush) = GetVisual(hint, hintDir.Value.ToString());
-                        DrawElement(g, symbol, brush, x, y);
+                        DrawElement(g, symbol, brush, x, y, offsetX, offsetY);
                         continue;
                     }
                     if (rayPath.Any(p => p.x == x && p.y == y))
                     {
-                        DrawElement(g, ".", Brushes.Cyan, x, y);
+                        DrawElement(g, ".", Brushes.Cyan, x, y, offsetX, offsetY);
                         continue;
                     }
                     if (element is GameElement ge)
                     {
                         var (symbol, brush) = GetVisual(ge);
-                        DrawElement(g, symbol, brush, x, y);
+                        DrawElement(g, symbol, brush, x, y, offsetX, offsetY);
                         continue;
                     }
                 }

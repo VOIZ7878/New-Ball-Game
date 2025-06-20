@@ -67,7 +67,5 @@ namespace BallGame
             if (gamePanel != null) gamePanel.Visible = true;
             gamePanel?.BringToFront();
         }
-
-        
     }
 }
