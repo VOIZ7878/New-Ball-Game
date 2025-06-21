@@ -47,11 +47,11 @@ namespace BallGame
                 ShowMenuPanel();
         }
 
-        private async void MainForm_Load(object? sender, EventArgs e)
+        private void MainForm_Load(object? sender, EventArgs e)
         {
             ShowMenuPanel();
             runner = new GameRunner(renderer, inputManager, soundManager, menuManager);
-            await runner.Run();
+            Task.Run(async () => await runner.Run());
         }
 
         public void ShowMenuPanel()

@@ -3,8 +3,8 @@ namespace BallGame
     public class WinFormsMenuManager : IMenuManager
     {
         private readonly Form form;
-        private TaskCompletionSource<MenuChoice>? menuTcs;
         private Label? lastScoreLabel;
+        private TaskCompletionSource<MenuChoice>? menuTcs;
         public event Action<MenuChoice>? MenuChoiceSelected;
 
         public WinFormsMenuManager(Form form)
@@ -80,12 +80,16 @@ namespace BallGame
                 dialog.Filter = "Level files (*.txt)|*.txt";
                 dialog.InitialDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "Levels");
                 dialog.RestoreDirectory = true;
-                if (dialog.ShowDialog(form) == System.Windows.Forms.DialogResult.OK)
+                var dlgResult = dialog.ShowDialog(form);
+                if (dlgResult == System.Windows.Forms.DialogResult.OK)
                 {
                     return System.IO.Path.GetFileName(dialog.FileName);
                 }
+                else
+                {
+                    return null;
+                }
             }
-            return null;
         }
     }
 }
