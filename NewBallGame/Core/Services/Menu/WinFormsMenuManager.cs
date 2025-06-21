@@ -39,6 +39,8 @@ namespace BallGame
                     lastScoreLabel.Text = lastScoreDisplay;
             }
             menuTcs = new TaskCompletionSource<MenuChoice>();
+            if (form is MainForm mainForm)
+                mainForm.ShowMenuPanel();
             return menuTcs.Task;
         }
 
