@@ -113,8 +113,9 @@ namespace BallGame
 
         public GameField StartNewGame(bool resetScore)
         {
-            gameField = levelBuilder.CreateGameField(true);
+            levelBuilder = new LevelBuilder();
             levelBuilder.SetGenerationSettings(GenerationSettings);
+            gameField = levelBuilder.CreateGameField(true);
             levelBuilder.InitializeField(gameField);
             if (resetScore)
             {

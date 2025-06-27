@@ -101,19 +101,8 @@ namespace BallGame.Rendering
             Console.ResetColor();
         }
 
-        public void Clear()
-        {
-            Console.Clear();
-        }
-
-        public void WriteLine(string message)
-        {
-            Console.WriteLine(message);
-        }
-
-        public void Pause(int milliseconds = 2000)
-        {
-            System.Threading.Thread.Sleep(milliseconds);
-        }
+        public void Clear() => Console.Clear();
+        public void WriteLine(string message) => Console.WriteLine(message);
+        public void Pause(int milliseconds = 2000) => Thread.Sleep(milliseconds);
     }
 }

@@ -108,8 +108,8 @@ namespace BallGame.Rendering
 
         public void Clear()
         {
-            Invoke(panel, () => panel.Refresh());
-            Invoke(consoleBox, () => consoleBox.Clear());
+            Invoke(panel, panel.Refresh);
+            Invoke(consoleBox, consoleBox.Clear);
         }
 
         public void WriteLine(string message)
@@ -119,7 +119,7 @@ namespace BallGame.Rendering
 
         public void Pause(int milliseconds)
         {
-            if (System.Threading.SynchronizationContext.Current != null)
+            if (SynchronizationContext.Current != null)
             {
                 var t = Task.Delay(milliseconds);
                 t.Wait();
@@ -152,7 +152,7 @@ namespace BallGame.Rendering
         {
             FieldToRender = field;
             UpdateScoreLabel(field);
-            Invoke(panel, () => panel.Invalidate());
+            Invoke(panel, panel.Invalidate);
         }
 
         private void Invoke(Control control, Action action)
